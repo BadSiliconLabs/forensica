@@ -5,6 +5,7 @@ members = [
     "crates/forensica-meta",
     "crates/forensica-jpeg",
     "crates/forensica-pixel",
+    "crates/forensica-engine",
     "crates/forensica-bridge",
     "crates/forensica-cli",
 ]
@@ -20,6 +21,8 @@ forensica-core = { path = "crates/forensica-core" }
 forensica-meta = { path = "crates/forensica-meta" }
 forensica-jpeg = { path = "crates/forensica-jpeg" }
 forensica-pixel = { path = "crates/forensica-pixel" }
+forensica-engine = { path = "crates/forensica-engine" }
+anyhow = "1"
 image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp", "tiff", "bmp", "gif"] }
 kamadak-exif = "0.6"
 rayon = "1.10"

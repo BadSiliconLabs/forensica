@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Intentionally no INTERNET permission, even in debug builds (Forensica principle: offline).
+         For hot reload / `flutter run` debugging on a device, temporarily add
+         <uses-permission android:name="android.permission.INTERNET"/> here and do not commit it. -->
+</manifest>

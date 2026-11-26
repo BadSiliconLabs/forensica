@@ -1,0 +1,19 @@
+[package]
+name = "forensica-engine"
+description = "Forensica module registry, sessions and interactive renderers shared by the bridge and the CLI"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+forensica-core.workspace = true
+forensica-meta.workspace = true
+forensica-jpeg.workspace = true
+forensica-pixel.workspace = true
+image.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+
+[lints]
+workspace = true
