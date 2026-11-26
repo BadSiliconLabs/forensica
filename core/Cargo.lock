@@ -1234,6 +1234,10 @@ name = "forensica-jpeg"
 version = "0.1.0"
 dependencies = [
  "forensica-core",
+ "image",
+ "kamadak-exif",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

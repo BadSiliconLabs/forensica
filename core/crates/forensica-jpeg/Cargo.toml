@@ -1,5 +1,6 @@
 [package]
 name = "forensica-jpeg"
+description = "Forensica JPEG analysis: structure, quantisation tables, DCT coefficients, double compression"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,6 +8,10 @@ repository.workspace = true
 
 [dependencies]
 forensica-core.workspace = true
+image.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+kamadak-exif.workspace = true
 
 [lints]
 workspace = true
