@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/forensica-core",
+    "crates/forensica-meta",
+    "crates/forensica-jpeg",
+    "crates/forensica-pixel",
+    "crates/forensica-bridge",
+    "crates/forensica-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/BadSiliconLabs/forensica"
+
+[workspace.dependencies]
+forensica-core = { path = "crates/forensica-core" }
+forensica-meta = { path = "crates/forensica-meta" }
+forensica-jpeg = { path = "crates/forensica-jpeg" }
+forensica-pixel = { path = "crates/forensica-pixel" }
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp", "tiff", "bmp", "gif"] }
+kamadak-exif = "0.6"
+rayon = "1.10"
+rustfft = "6.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+quick-xml = "0.37"
+flate2 = "1"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "warn"
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1

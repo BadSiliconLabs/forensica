@@ -1,0 +1,23 @@
+[package]
+name = "forensica-meta"
+description = "Forensica metadata analysis: EXIF, XMP, IPTC, ICC, MakerNotes, C2PA, text chunks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+forensica-core.workspace = true
+image.workspace = true
+kamadak-exif.workspace = true
+quick-xml.workspace = true
+flate2.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+c2pa = { version = "0.92", default-features = false, features = ["rust_native_crypto"], optional = true }
+
+[features]
+default = ["c2pa"]
+
+[lints]
+workspace = true

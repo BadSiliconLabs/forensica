@@ -1,0 +1,30 @@
+# Rust
+core/target/
+**/*.rs.bk
+# Flutter / Dart
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/.pub-cache/
+app/.pub/
+app/**/GeneratedPluginRegistrant.*
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/android/app/.cxx/
+app/linux/flutter/ephemeral/
+app/rust_builder/**/build/
+*.iml
+.idea/
+.vscode/
+# Release artefacts
+dist/
+*.AppImage
+*.apk
+*.jks
+*.keystore
+# Local
+.env
+*.log
