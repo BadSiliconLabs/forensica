@@ -40,6 +40,10 @@ pub struct C2paSummary {
     pub actions: Vec<String>,
     /// Digital source types declared in actions.
     pub source_types: Vec<String>,
+    /// Digital source types declared by *earlier* manifests in the provenance chain, with the action description.
+    pub history_source_types: Vec<(String, String)>,
+    /// Action descriptions from every manifest (e.g. "Created by Google Generative AI.").
+    pub descriptions: Vec<String>,
     /// Ingredient titles.
     pub ingredients: Vec<String>,
     /// Number of manifests in the store.
@@ -128,6 +132,28 @@ pub fn summarize(json: Value) -> C2paSummary {
                     let dst = s(&act["digitalSourceType"]);
                     if !dst.is_empty() {
                         out.source_types.push(dst);
+                    }
+                }
+            }
+        }
+    }
+    // Walk the whole provenance chain, not only the active manifest: an AI generation step is often
+    // recorded in an ingredient manifest while the latest one only says "opened / transcoded".
+    if let Some(all) = manifests.as_object() {
+        for (label, man) in all {
+            for a in man["assertions"].as_array().into_iter().flatten() {
+                if !s(&a["label"]).starts_with("c2pa.actions") {
+                    continue;
+                }
+                for act in a["data"]["actions"].as_array().into_iter().flatten() {
+                    let desc = s(&act["description"]);
+                    if !desc.is_empty() && !out.descriptions.contains(&desc) {
+                        out.descriptions.push(desc.clone());
+                    }
+                    let dst = s(&act["digitalSourceType"]);
+                    if !dst.is_empty() && *label != active {
+                        let what = if desc.is_empty() { s(&act["action"]) } else { desc };
+                        out.history_source_types.push((dst, what));
                     }
                 }
             }
@@ -255,6 +281,37 @@ pub fn findings(c: &C2paSummary) -> Vec<Finding> {
             out.push(f);
         }
     }
+    // Strongest declaration anywhere in the earlier history (ingredients).
+    let rank = |t: &str| match t.rsplit('/').next().unwrap_or(t) {
+        "trainedAlgorithmicMedia" | "compositeWithTrainedAlgorithmicMedia" => 3,
+        "algorithmicMedia" | "compositeSynthetic" => 2,
+        _ => 0,
+    };
+    if let Some((dst, what)) = c.history_source_types.iter().max_by_key(|(d, _)| rank(d)).filter(|(d, _)| rank(d) >= 2)
+    {
+        let current = c.source_types.iter().map(|t| rank(t)).max().unwrap_or(0);
+        if rank(dst) > current {
+            out.push(
+                Finding::new(MODULE, "c2pa.history_generative_ai", Severity::High, 0.9, "Content Credentials history includes generative AI")
+                    .explain(format!(
+                        "An earlier step in this file's signed provenance chain declares AI-generated content ({}: \"{}\"). The latest step only re-saved or enhanced it, which is why it looks innocuous on the surface. Typical of AI photo editors (e.g. objects added or removed with generative fill).",
+                        dst.rsplit('/').next().unwrap_or(dst),
+                        what
+                    ))
+                    .limits("A self-declaration by the signing software; it says AI was involved, not which pixels changed.")
+                    .with("digital_source_type", dst)
+                    .with("step", what),
+            );
+        }
+    }
+    if c.descriptions.iter().any(|d| d.to_ascii_lowercase().contains("synthid")) {
+        out.push(
+            Finding::new(MODULE, "c2pa.synthid_declared", Severity::Medium, 0.9, "Credentials declare an invisible SynthID watermark")
+                .explain("The provenance chain states that Google's imperceptible SynthID watermark was added, which Google applies to content produced or edited with its generative AI.")
+                .limits("Forensica cannot verify SynthID offline (that needs Google's detector); this relies on the signed declaration only.")
+                .with("descriptions", c.descriptions.join(" | ")),
+        );
+    }
     if let Some(f) = generator::from_software("C2PA claim generator", &c.claim_generator) {
         let mut f = f;
         f.module_id = MODULE.into();
@@ -298,6 +355,26 @@ mod tests {
         assert!(c.present);
         assert!(!c.failures.is_empty());
         assert!(findings(&c).iter().any(|x| x.code == "c2pa.invalid"));
+    }
+
+    #[test]
+    fn generative_ai_in_ingredient_chain_is_reported() {
+        let act = |a: &str, d: &str, t: &str| serde_json::json!({"action": a, "description": d, "digitalSourceType": format!("http://cv.iptc.org/newscodes/digitalsourcetype/{t}")});
+        let man = |acts: Vec<serde_json::Value>| serde_json::json!({"assertions": [{"label": "c2pa.actions.v2", "data": {"actions": acts}}]});
+        let json = serde_json::json!({
+            "active_manifest": "m3",
+            "manifests": {
+                "m1": man(vec![act("c2pa.created", "Created by Google Generative AI.", "trainedAlgorithmicMedia")]),
+                "m2": man(vec![act("c2pa.edited", "Added imperceptible SynthId watermark.", "trainedAlgorithmicMedia")]),
+                "m3": man(vec![act("c2pa.transcoded", "", "algorithmicallyEnhanced")]),
+            }
+        });
+        let f = findings(&summarize(json));
+        let codes: Vec<&str> = f.iter().map(|x| x.code.as_str()).collect();
+        assert!(codes.contains(&"c2pa.history_generative_ai"), "{codes:?}");
+        assert!(codes.contains(&"c2pa.synthid_declared"), "{codes:?}");
+        let h = f.iter().find(|x| x.code == "c2pa.history_generative_ai").unwrap();
+        assert_eq!(h.severity, Severity::High);
     }
 
     #[test]

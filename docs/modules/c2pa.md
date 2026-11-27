@@ -13,3 +13,9 @@ Uses the official `c2pa` Rust SDK (`rust_native_crypto`, **no default features**
 
 ## References
 C2PA Technical Specification 2.x; <https://github.com/contentauth/c2pa-rs>.
+
+## Provenance chain
+Every manifest in the store is inspected, not only the active one. AI photo editors (e.g. Google's) record "Created by … Generative AI" with `digitalSourceType = trainedAlgorithmicMedia` in an *ingredient* manifest, while the latest manifest only says "opened / transcoded / algorithmicallyEnhanced". If an earlier step declares generative AI and the active one does not, Forensica reports **`c2pa.history_generative_ai` (high)**. Action descriptions mentioning SynthID produce `c2pa.synthid_declared` (medium); the watermark itself cannot be verified offline.
+
+## Why pixel detectors can miss AI edits
+Generative editors typically re-render and re-encode the *whole* image (often at a new size), so there is no locally inconsistent compression, noise or CFA region to find; the inserted object is consistent with the regenerated surroundings. When the provenance metadata is stripped, such edits are generally not detectable by the classical methods in this tool.

@@ -381,9 +381,9 @@ fn thumbnail(b: &MetaBundle, out: &mut Vec<Finding>) {
     let swapped = (t.main_aspect - 1.0 / t.thumb_aspect.max(1e-3)).abs() / t.main_aspect.max(1e-3) < 0.03;
     if aspect_off > 0.06 && !swapped {
         out.push(
-            Finding::new(MODULE, "meta.thumbnail_aspect", Severity::Medium, 0.8, "Embedded thumbnail has a different shape")
+            Finding::new(MODULE, "meta.thumbnail_aspect", Severity::Low, 0.6, "Embedded thumbnail has a different shape")
                 .explain("The EXIF thumbnail's aspect ratio differs from the main image: the image was probably cropped without the thumbnail being regenerated.")
-                .limits("Some cameras store letterboxed thumbnails (e.g. 160×120 for 16:9 images).")
+                .limits("Many phones and cameras store fixed-size (e.g. 4:3) or centre-cropped thumbnails regardless of the photo's shape, so this is common in untouched files.")
                 .with("main_aspect", format!("{:.3}", t.main_aspect))
                 .with("thumbnail_aspect", format!("{:.3}", t.thumb_aspect)),
         );
@@ -480,7 +480,7 @@ fn impossible_values(b: &MetaBundle, out: &mut Vec<Finding>) {
         out.push(impossible("GPS", "coordinates out of range or malformed", &v));
     }
     if let Some(o) = e.orientation {
-        if !(1..=8).contains(&o) {
+        if o > 8 {
             out.push(impossible("Orientation", "not one of the 8 defined values", &o.to_string()));
         }
     }
