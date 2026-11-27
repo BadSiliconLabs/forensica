@@ -129,6 +129,39 @@ pub fn report_json(id: u32) -> Result<String> {
     s.last_report().map(|r| r.to_json()).ok_or_else(|| anyhow!("no analysis has been run yet"))
 }
 
+/// Compares the image's sensor noise with reference photos from one camera (PRNU).
+pub fn prnu_compare(id: u32, references: Vec<String>) -> Result<PrnuDto> {
+    let r = interactive::prnu(&*session(id)?, &references)?;
+    Ok(PrnuDto {
+        pce: r.pce,
+        peak_x: r.peak.0,
+        peak_y: r.peak.1,
+        references: r.references as u32,
+        skipped: r.skipped as u32,
+        crop: r.crop as u32,
+        threshold: interactive::PRNU_THRESHOLD,
+    })
+}
+
+/// Lists image files under a folder (Linux folder mode).
+pub fn list_images(dir: String) -> Vec<String> {
+    interactive::list_images(Path::new(&dir))
+}
+
+/// Finds visually similar images (perceptual hash) among `paths`.
+pub fn find_similar(id: u32, paths: Vec<String>, max_distance: u32) -> Result<Vec<SimilarDto>> {
+    Ok(interactive::similar(&*session(id)?, &paths, max_distance)?
+        .into_iter()
+        .map(|s| SimilarDto {
+            path: s.path,
+            phash_distance: s.phash_distance,
+            dhash_distance: s.dhash_distance,
+            width: s.width,
+            height: s.height,
+        })
+        .collect())
+}
+
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
     flutter_rust_bridge::setup_default_user_utils();

@@ -54,12 +54,20 @@ class _MetadataPanelState extends ConsumerState<MetadataPanel> {
     final a = ref.watch(analysisProvider);
     final q = _query.toLowerCase();
     final groups = metadataGroups(a)
-        .map((g) => MetaGroup(
-              g.name,
-              q.isEmpty
-                  ? g.entries
-                  : g.entries.where((e) => e.$1.toLowerCase().contains(q) || e.$2.toLowerCase().contains(q)).toList(),
-            ))
+        .map(
+          (g) => MetaGroup(
+            g.name,
+            q.isEmpty
+                ? g.entries
+                : g.entries
+                      .where(
+                        (e) =>
+                            e.$1.toLowerCase().contains(q) ||
+                            e.$2.toLowerCase().contains(q),
+                      )
+                      .toList(),
+          ),
+        )
         .where((g) => g.entries.isNotEmpty)
         .toList();
     final theme = Theme.of(context);
@@ -93,19 +101,35 @@ class _MetadataPanelState extends ConsumerState<MetadataPanel> {
                           InkWell(
                             onLongPress: () {
                               Clipboard.setData(ClipboardData(text: '$k: $v'));
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.copied)));
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(l.copied)));
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(
                                     width: 160,
-                                    child: Text(k, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+                                    child: Text(
+                                      k,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(child: SelectableText(v, style: theme.textTheme.bodySmall)),
+                                  Expanded(
+                                    child: SelectableText(
+                                      v,
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

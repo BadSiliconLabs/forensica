@@ -55,6 +55,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   FindingDto dco_decode_finding_dto(dynamic raw);
 
   @protected
+  int dco_decode_i_32(dynamic raw);
+
+  @protected
   PlatformInt64 dco_decode_i_64(dynamic raw);
 
   @protected
@@ -85,6 +88,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<SimilarDto> dco_decode_list_similar_dto(dynamic raw);
+
+  @protected
   List<VizDto> dco_decode_list_viz_dto(dynamic raw);
 
   @protected
@@ -106,10 +112,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PreviewDto dco_decode_preview_dto(dynamic raw);
 
   @protected
+  PrnuDto dco_decode_prnu_dto(dynamic raw);
+
+  @protected
   ReportDto dco_decode_report_dto(dynamic raw);
 
   @protected
   SessionInfo dco_decode_session_info(dynamic raw);
+
+  @protected
+  SimilarDto dco_decode_similar_dto(dynamic raw);
 
   @protected
   int dco_decode_u_32(dynamic raw);
@@ -158,6 +170,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   FindingDto sse_decode_finding_dto(SseDeserializer deserializer);
 
   @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
   PlatformInt64 sse_decode_i_64(SseDeserializer deserializer);
 
   @protected
@@ -190,6 +205,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<SimilarDto> sse_decode_list_similar_dto(SseDeserializer deserializer);
+
+  @protected
   List<VizDto> sse_decode_list_viz_dto(SseDeserializer deserializer);
 
   @protected
@@ -213,10 +231,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PreviewDto sse_decode_preview_dto(SseDeserializer deserializer);
 
   @protected
+  PrnuDto sse_decode_prnu_dto(SseDeserializer deserializer);
+
+  @protected
   ReportDto sse_decode_report_dto(SseDeserializer deserializer);
 
   @protected
   SessionInfo sse_decode_session_info(SseDeserializer deserializer);
+
+  @protected
+  SimilarDto sse_decode_similar_dto(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_32(SseDeserializer deserializer);
@@ -229,9 +253,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   VizDto sse_decode_viz_dto(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   void sse_encode_AnyhowException(
@@ -279,6 +300,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_finding_dto(FindingDto self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
   void sse_encode_i_64(PlatformInt64 self, SseSerializer serializer);
 
   @protected
@@ -321,6 +345,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_list_similar_dto(
+    List<SimilarDto> self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_list_viz_dto(List<VizDto> self, SseSerializer serializer);
 
   @protected
@@ -345,10 +375,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_preview_dto(PreviewDto self, SseSerializer serializer);
 
   @protected
+  void sse_encode_prnu_dto(PrnuDto self, SseSerializer serializer);
+
+  @protected
   void sse_encode_report_dto(ReportDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_session_info(SessionInfo self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_similar_dto(SimilarDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_32(int self, SseSerializer serializer);
@@ -361,9 +397,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_viz_dto(VizDto self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 }
 
 // Section: wire_class

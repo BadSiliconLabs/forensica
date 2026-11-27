@@ -221,3 +221,27 @@ impl From<&Report> for ReportDto {
         }
     }
 }
+
+/// PRNU comparison result.
+#[derive(Debug, Clone)]
+pub struct PrnuDto {
+    /// Peak-to-correlation energy.
+    pub pce: f32,
+    pub peak_x: i32,
+    pub peak_y: i32,
+    pub references: u32,
+    pub skipped: u32,
+    pub crop: u32,
+    /// Usual decision threshold (60).
+    pub threshold: f32,
+}
+
+/// A near-duplicate.
+#[derive(Debug, Clone)]
+pub struct SimilarDto {
+    pub path: String,
+    pub phash_distance: u32,
+    pub dhash_distance: u32,
+    pub width: u32,
+    pub height: u32,
+}

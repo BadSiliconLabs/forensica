@@ -10,8 +10,9 @@ forensica/
       forensica-meta/       EXIF/XMP/IPTC/ICC/MakerNotes/GPS/thumbnail rules, C2PA, generator hints
       forensica-jpeg/       JPEG structure, quantisation tables + fingerprints, trailing data, DCT decoding, double compression
       forensica-pixel/      ELA, noise residual, FFT, channels/bit planes, resampling, copy-move, CFA, lighting, PRNU, AI heuristics, pHash
-      forensica-bridge/     flutter_rust_bridge v2 API consumed by the app
-      forensica-cli/        headless batch tool (folder in, JSON reports out) and benchmark
+      forensica-engine/     module registry, sessions (LRU of 4 decoded images), interactive renderers, PRNU/duplicate search
+      forensica-bridge/     flutter_rust_bridge v2 API consumed by the app (package `forensica_bridge`)
+      forensica-cli/        headless tool: analyze, batch, bench, synthetic samples
   app/                      Flutter app (Linux + Android only)
     rust_builder/           cargokit glue that builds forensica-bridge for each target
   docs/                     this file, decisions, blockers, per-module docs
@@ -48,6 +49,19 @@ pub trait AnalysisModule: Send + Sync {
 
 ### Large images / Android
 `Options::max_pixels` caps the working resolution of pixel modules (default: unlimited on desktop, 12 MP on Android = "degraded mode"). Metadata/JPEG-structure modules always see the full file. Interactive tools (ELA quality slider, bit planes, pixel inspector) operate on a per-session decoded image kept in the bridge.
+
+### Registered modules
+| id | crate | needs pixels | resolution |
+|---|---|---|---|
+| metadata, provenance, generator | meta | thumbnail only | full file |
+| jpeg, double_jpeg | jpeg | DCT / full-res pixels | full |
+| ela, noise, copymove, illuminant, hashes | pixel | yes | honours `max_pixels` (copy-move ≤ 1 MP) |
+| spectrum, resampling, cfa, synthetic | pixel | yes | full resolution (scaling would destroy the traces) |
+
+PRNU and near-duplicate search are interactive (they need user-chosen files) and live in `forensica-engine::interactive`.
+
+### Performance
+`forensica-cli bench` on a synthetic 24 MP JPEG (24-core desktop): 1.9 s total at full resolution, 1.3 s with the 12 MP cap. Slowest modules: noise residual (median filter) and ELA (re-encode).
 
 ## Bridge
 `forensica-bridge` exposes a small API (flutter_rust_bridge v2):

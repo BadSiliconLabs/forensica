@@ -35,15 +35,14 @@ class ViewerState {
     double? swipe,
     bool? inspector,
     PixelDto? Function()? pixel,
-  }) =>
-      ViewerState(
-        layerId: layerId != null ? layerId() : this.layerId,
-        opacity: opacity ?? this.opacity,
-        mode: mode ?? this.mode,
-        swipe: swipe ?? this.swipe,
-        inspector: inspector ?? this.inspector,
-        pixel: pixel != null ? pixel() : this.pixel,
-      );
+  }) => ViewerState(
+    layerId: layerId != null ? layerId() : this.layerId,
+    opacity: opacity ?? this.opacity,
+    mode: mode ?? this.mode,
+    swipe: swipe ?? this.swipe,
+    inspector: inspector ?? this.inspector,
+    pixel: pixel != null ? pixel() : this.pixel,
+  );
 }
 
 class ViewerNotifier extends Notifier<ViewerState> {
@@ -54,9 +53,12 @@ class ViewerNotifier extends Notifier<ViewerState> {
   void setOpacity(double v) => state = state.copyWith(opacity: v);
   void setMode(CompareMode m) => state = state.copyWith(mode: m);
   void setSwipe(double v) => state = state.copyWith(swipe: v.clamp(0, 1));
-  void toggleInspector() => state = state.copyWith(inspector: !state.inspector, pixel: () => null);
+  void toggleInspector() =>
+      state = state.copyWith(inspector: !state.inspector, pixel: () => null);
   void setPixel(PixelDto? p) => state = state.copyWith(pixel: () => p);
   void reset() => state = const ViewerState();
 }
 
-final viewerProvider = NotifierProvider<ViewerNotifier, ViewerState>(ViewerNotifier.new);
+final viewerProvider = NotifierProvider<ViewerNotifier, ViewerState>(
+  ViewerNotifier.new,
+);

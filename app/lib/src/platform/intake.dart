@@ -20,9 +20,12 @@ class Intake {
         await onFile(call.arguments as String);
       }
     });
-    _channel.invokeMethod<String>('getInitialFile').then((p) {
-      if (p != null) onFile(p);
-    }).catchError((Object _) {});
+    _channel
+        .invokeMethod<String>('getInitialFile')
+        .then((p) {
+          if (p != null) onFile(p);
+        })
+        .catchError((Object _) {});
   }
 
   static Future<Directory?> _intakeDir() async {

@@ -8,7 +8,7 @@ import 'dto.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `session`, `to_options`
+// These functions are ignored because they are not marked as `pub`: `forensica_pixel_threshold`, `session`, `to_options`
 
 /// Opens a file read-only and returns its facts (incl. SHA-256 of the original).
 Future<SessionInfo> openSession({required String path}) =>
@@ -46,6 +46,30 @@ void cancelAnalysis({required int id}) =>
 /// JSON of the last report (visualization bitmaps omitted).
 Future<String> reportJson({required int id}) =>
     RustLib.instance.api.crateApiEngineReportJson(id: id);
+
+/// Compares the image's sensor noise with reference photos from one camera (PRNU).
+Future<PrnuDto> prnuCompare({
+  required int id,
+  required List<String> references,
+}) => RustLib.instance.api.crateApiEnginePrnuCompare(
+  id: id,
+  references: references,
+);
+
+/// Lists image files under a folder (Linux folder mode).
+Future<List<String>> listImages({required String dir}) =>
+    RustLib.instance.api.crateApiEngineListImages(dir: dir);
+
+/// Finds visually similar images (perceptual hash) among `paths`.
+Future<List<SimilarDto>> findSimilar({
+  required int id,
+  required List<String> paths,
+  required int maxDistance,
+}) => RustLib.instance.api.crateApiEngineFindSimilar(
+  id: id,
+  paths: paths,
+  maxDistance: maxDistance,
+);
 
 /// ELA at a user-chosen JPEG quality.
 Future<VizDto> renderEla({required int id, required int quality}) =>

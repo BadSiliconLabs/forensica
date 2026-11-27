@@ -62,3 +62,20 @@ One entry per decision: context, choice, alternatives. Newest last.
 ## D13 — Honest JPEG fingerprints
 - **Context:** The prompt asks for a built-in table of camera/software quantisation tables. No verified, redistributable dataset was available offline and inventing tables would be dishonest.
 - **Choice:** Ship the IJG/libjpeg family (computed exactly for q = 1…100) plus structural signatures (Ducky, Adobe APP14, JFIF+EXIF, progressive, MPF). The fingerprint function is ready to accept a data table later.
+
+## D14 — No ONNX AI-image classifier
+- **Context:** Phase 4 allows an on-device ONNX classifier only if permissively licensed and reasonably reliable.
+- **Choice:** Not shipped. Known open detectors are trained on narrow datasets, generalise poorly to current generators and post-processing, and several have non-commercial/unclear licences; `ort` would also add ~20 MB of native runtime per Android ABI. Implemented explainable low-severity heuristics (`synthetic` module) and documented their unreliability.
+- **Alternatives:** ship a ViT detector with a big warning (rejected: users read a percentage as a verdict).
+
+## D15 — Copy-move false-positive controls
+- **Context:** Block matching fires on sky gradients and periodic textures (bricks, synthetic lattices) — observed on our own synthetic samples.
+- **Choice:** plane-fit residual texture test, minimum shift 48 px, minimum support max(150, area/4000), shift must dominate (≥2.5×) every rival shift sharing ≥10 % of its blocks, and no report when the two best shifts are within 1.6×.
+
+## D16 — Pixel modules that need full resolution ignore `max_pixels`
+- **Context:** The Android degraded mode caps working resolution, but resizing destroys JPEG grids, CFA lattices, resampling and PRNU traces.
+- **Choice:** `double_jpeg`, `cfa`, `resampling`, `spectrum`, `synthetic` always use full-resolution pixels (they are cheap or crop); `ela`, `noise`, `copymove`, `illuminant` honour `max_pixels`.
+
+## D17 — Simplified portrait mode, complete landscape mode
+- **Context:** Requested mid-run: a functional rather than polished UI; on Android a simplified portrait mode and the complete desktop experience in landscape.
+- **Choice:** The analysis screen switches on orientation, not on device. Landscape (width > height and ≥ 600 dp) or any window ≥ 900 dp uses the complete mode (viewer + Findings/Metadata/Tools side panel). Portrait uses the simplified mode: Findings, Image (with quick layer chips) and Metadata tabs, plus a "rotate for complete mode" hint. Same widgets, so there's no extra code path to maintain.

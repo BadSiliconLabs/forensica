@@ -27,17 +27,31 @@ class _BatchScreenState extends State<BatchScreen> {
   int _total = 0;
   final _log = <String>[];
 
-  static const _exts = {'jpg', 'jpeg', 'png', 'webp', 'tif', 'tiff', 'heic', 'heif', 'avif', 'gif', 'bmp', 'dng'};
+  static const _exts = {
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'tif',
+    'tiff',
+    'heic',
+    'heif',
+    'avif',
+    'gif',
+    'bmp',
+    'dng',
+  };
 
   Future<void> _run(AppLocalizations l) async {
     final inDir = _in, outDir = _out;
     if (inDir == null || outDir == null) return;
-    final files = Directory(inDir)
-        .listSync()
-        .whereType<File>()
-        .where((f) => _exts.contains(f.path.split('.').last.toLowerCase()))
-        .toList()
-      ..sort((a, b) => a.path.compareTo(b.path));
+    final files =
+        Directory(inDir)
+            .listSync()
+            .whereType<File>()
+            .where((f) => _exts.contains(f.path.split('.').last.toLowerCase()))
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
     setState(() {
       _running = true;
       _cancel = false;
@@ -54,15 +68,25 @@ class _BatchScreenState extends State<BatchScreen> {
         ReportDto? report;
         await for (final e in engine.analyze(
           id: s.id,
-          options: const AnalysisOptions(maxPixels: 0, elaQuality: 90, modules: [], extra: []),
+          options: const AnalysisOptions(
+            maxPixels: 0,
+            elaQuality: 90,
+            modules: [],
+            extra: [],
+          ),
         )) {
           if (e.report != null) report = e.report;
         }
         if (report == null) throw StateError('no report');
         final base = '$outDir/${s.name}';
-        await File('$base.forensica.json').writeAsString(await engine.reportJson(id: s.id));
-        await File('$base.forensica.pdf').writeAsBytes(await buildPdfReport(session: s, report: report, l: l));
-        final high = [for (final m in report.modules) ...m.findings].where((x) => x.severity == 'high').length;
+        await File('$base.forensica.json')
+            .writeAsString(await engine.reportJson(id: s.id));
+        await File(
+          '$base.forensica.pdf',
+        ).writeAsBytes(await buildPdfReport(session: s, report: report, l: l));
+        final high = [for (final m in report.modules) ...m.findings]
+            .where((x) => x.severity == 'high')
+            .length;
         setState(() {
           _done++;
           _log.add('✓ ${s!.name}  ($high high)');
@@ -81,8 +105,14 @@ class _BatchScreenState extends State<BatchScreen> {
       _log.add(l.batchDone(_done, _failed));
     });
     // Keep the JSON tidy for scripts: write an index.
-    final index = {'input': inDir, 'analysed': _done, 'failed': _failed, 'log': _log};
-    await File('$outDir/forensica-batch-index.json').writeAsString(const JsonEncoder.withIndent('  ').convert(index));
+    final index = {
+      'input': inDir,
+      'analysed': _done,
+      'failed': _failed,
+      'log': _log,
+    };
+    await File('$outDir/forensica-batch-index.json')
+        .writeAsString(const JsonEncoder.withIndent('  ').convert(index));
   }
 
   @override
@@ -125,19 +155,31 @@ class _BatchScreenState extends State<BatchScreen> {
             Row(
               children: [
                 FilledButton.icon(
-                  onPressed: (_running || _in == null || _out == null) ? null : () => _run(l),
+                  onPressed: (_running || _in == null || _out == null)
+                      ? null
+                      : () => _run(l),
                   icon: const Icon(Icons.play_arrow),
                   label: Text(l.start),
                 ),
                 const SizedBox(width: 12),
-                if (_running) OutlinedButton(onPressed: () => setState(() => _cancel = true), child: Text(l.cancel)),
+                if (_running)
+                  OutlinedButton(
+                    onPressed: () => setState(() => _cancel = true),
+                    child: Text(l.cancel),
+                  ),
               ],
             ),
             const SizedBox(height: 12),
-            if (_total > 0) LinearProgressIndicator(value: (_done + _failed) / _total),
+            if (_total > 0)
+              LinearProgressIndicator(value: (_done + _failed) / _total),
             const SizedBox(height: 12),
             Expanded(
-              child: ListView(children: [for (final line in _log) Text(line, style: const TextStyle(fontFamily: 'monospace'))]),
+              child: ListView(
+                children: [
+                  for (final line in _log)
+                    Text(line, style: const TextStyle(fontFamily: 'monospace')),
+                ],
+              ),
             ),
           ],
         ),

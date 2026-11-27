@@ -625,6 +625,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'cached'**
   String get cached;
+
+  /// No description provided for @prnuMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'PCE {pce} ≥ {threshold}: the sensor noise matches the reference camera.'**
+  String prnuMatch(String pce, String threshold);
+
+  /// No description provided for @prnuNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'PCE {pce} < {threshold}: no match. Inconclusive if the image was resized, cropped or heavily compressed.'**
+  String prnuNoMatch(String pce, String threshold);
+
+  /// No description provided for @prnuDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'{refs} reference(s) used, {skipped} skipped (different resolution or unreadable), {crop}×{crop} crop.'**
+  String prnuDetails(int refs, int skipped, int crop);
+
+  /// No description provided for @chooseImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose images'**
+  String get chooseImages;
+
+  /// No description provided for @similarItem.
+  ///
+  /// In en, this message translates to:
+  /// **'distance {d} · {w}×{h}'**
+  String similarItem(int d, int w, int h);
+
+  /// No description provided for @searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get searching;
+
+  /// No description provided for @openThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyse this file'**
+  String get openThis;
+
+  /// No description provided for @exportReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export report'**
+  String get exportReport;
+
+  /// No description provided for @viewerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Image {name}, showing {layer}'**
+  String viewerLabel(String name, String layer);
+
+  /// No description provided for @rotateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate to landscape for the complete mode (all tools)'**
+  String get rotateHint;
 }
 
 class _AppLocalizationsDelegate

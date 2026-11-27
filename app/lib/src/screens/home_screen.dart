@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -34,7 +35,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _pick() async {
-    final f = await FilePicker.pickFile(type: Platform.isAndroid ? FileType.image : FileType.any);
+    final f = await FilePicker.pickFile(
+      type: Platform.isAndroid ? FileType.image : FileType.any,
+    );
     final path = f?.path;
     if (path != null) await _open(path);
   }
@@ -52,11 +55,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.image_search, size: 72, color: theme.colorScheme.primary, semanticLabel: l.appTitle),
+              Icon(
+                Icons.image_search,
+                size: 72,
+                color: theme.colorScheme.primary,
+                semanticLabel: l.appTitle,
+              ),
               const SizedBox(height: 16),
               Text(l.appTitle, style: theme.textTheme.headlineMedium),
               const SizedBox(height: 8),
-              Text(l.tagline, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+              Text(
+                l.tagline,
+                style: theme.textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 32),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
@@ -64,10 +76,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: _dragging ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
+                    color: _dragging
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.outlineVariant,
                     width: _dragging ? 3 : 1.5,
                   ),
-                  color: _dragging ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
+                  color: _dragging
+                      ? theme.colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
+                        )
+                      : null,
                 ),
                 child: Column(
                   children: [
@@ -89,9 +107,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  Icon(Icons.lock_outline, size: 18, color: theme.colorScheme.secondary),
+                  Icon(
+                    Icons.lock_outline,
+                    size: 18,
+                    color: theme.colorScheme.secondary,
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(l.privacyNote, style: theme.textTheme.bodySmall)),
+                  Expanded(
+                    child: Text(
+                      l.privacyNote,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -110,23 +137,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: body,
       );
     }
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          if (Platform.isLinux)
-            IconButton(
-              tooltip: l.batch,
-              icon: const Icon(Icons.dynamic_feed_outlined),
-              onPressed: () => context.push('/batch'),
-            ),
-          IconButton(
-            tooltip: l.settings,
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => context.push('/settings'),
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyO, control: true): _pick,
+      },
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              if (Platform.isLinux)
+                IconButton(
+                  tooltip: l.batch,
+                  icon: const Icon(Icons.dynamic_feed_outlined),
+                  onPressed: () => context.push('/batch'),
+                ),
+              IconButton(
+                tooltip: l.settings,
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: () => context.push('/settings'),
+              ),
+            ],
           ),
-        ],
+          body: body,
+        ),
       ),
-      body: body,
     );
   }
 }

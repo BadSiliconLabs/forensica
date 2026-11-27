@@ -49,7 +49,7 @@ fn anomalous_cluster(sigma: &Plane, lum: &Plane, grad: &Plane) -> Option<(usize,
     let mut seen = vec![false; z.len()];
     let mut best: Option<(usize, f32)> = None;
     for start in 0..z.len() {
-        if seen[start] || z[start].abs() < 3.5 {
+        if seen[start] || z[start].abs() < 4.5 {
             continue;
         }
         let sign = z[start].signum();
@@ -138,7 +138,7 @@ impl AnalysisModule for NoiseModule {
         let cluster = anomalous_cluster(&sigma, &lum, &grad);
         if let Some((n, total, z)) = cluster {
             let frac = n as f32 / total as f32;
-            if n >= 4 && (0.01..=0.5).contains(&frac) {
+            if n >= 6 && (0.01..=0.3).contains(&frac) {
                 findings.push(
                     Finding::new("noise", "noise.inconsistent_region", Severity::Low, (0.3 + 0.05 * z).min(0.7), "Region with inconsistent noise level")
                         .explain(format!(
