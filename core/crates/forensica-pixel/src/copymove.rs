@@ -226,6 +226,8 @@ impl AnalysisModule for CopyMoveModule {
         let mut mask = vec![0f32; l.w * l.h];
         let mut lines = Vec::new();
         for c in &clones {
+            // Thin the line overlay: at most ~80 lines per clone, evenly sampled.
+            let every = (c.pairs.len() / 80).max(1);
             for (k, (s, d)) in c.pairs.iter().enumerate() {
                 for (bx, by) in [*s, *d] {
                     for y in by..(by + B).min(l.h) {
@@ -234,7 +236,7 @@ impl AnalysisModule for CopyMoveModule {
                         }
                     }
                 }
-                if k % 6 == 0 && lines.len() < 400 {
+                if k % every == 0 && lines.len() < 400 {
                     let h = B as f32 / 2.0;
                     lines.push(Line {
                         x1: (s.0 as f32 + h) * inv,
