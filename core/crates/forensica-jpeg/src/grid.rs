@@ -112,7 +112,11 @@ pub const LOCAL: f32 = 3.5;
 pub fn analyse(img: &RgbImage) -> GridAnalysis {
     let (l, w, h) = luma(img);
     // Tiny images do not carry enough boundaries for a reliable estimate.
-    let global = if w < MIN_SIDE || h < MIN_SIDE { Grid { dx: 0, dy: 0, sx: 0.0, sy: 0.0 } } else { estimate(&l, w, 0, w, 0, h) };
+    let global = if w < MIN_SIDE || h < MIN_SIDE {
+        Grid { dx: 0, dy: 0, sx: 0.0, sy: 0.0 }
+    } else {
+        estimate(&l, w, 0, w, 0, h)
+    };
     let window = 64;
     let (mw, mh) = (w / window, h / window);
     let mut mismatch = vec![0f32; mw * mh];

@@ -296,7 +296,11 @@ mod tests {
     fn codes(path: &std::path::Path) -> Vec<(String, Severity)> {
         let input = ImageInput::from_path(path).unwrap();
         let r = forensica_engine::build_pipeline().run(&input, &Options::default(), &CancelToken::new(), &|_| {});
-        assert!(r.modules.iter().all(|m| m.error.is_none()), "{:?}", r.modules.iter().filter_map(|m| m.error.clone()).collect::<Vec<_>>());
+        assert!(
+            r.modules.iter().all(|m| m.error.is_none()),
+            "{:?}",
+            r.modules.iter().filter_map(|m| m.error.clone()).collect::<Vec<_>>()
+        );
         r.findings().into_iter().map(|f| (f.code.clone(), f.severity)).collect()
     }
 
@@ -305,7 +309,15 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("forensica-samples-{}", std::process::id()));
         super::write_all(&dir).unwrap();
         let expect = [
-            ("02-spliced-resaved.jpg", vec!["djpeg.aligned", "djpeg.local_inconsistency", "meta.editing_software", "meta.modified_after_capture"]),
+            (
+                "02-spliced-resaved.jpg",
+                vec![
+                    "djpeg.aligned",
+                    "djpeg.local_inconsistency",
+                    "meta.editing_software",
+                    "meta.modified_after_capture",
+                ],
+            ),
             ("03-copy-move.jpg", vec!["copymove.detected"]),
             ("04-upscaled.png", vec!["resample.global"]),
             ("05-generator-parameters.png", vec!["gen.sd_parameters"]),
