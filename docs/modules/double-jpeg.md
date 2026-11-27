@@ -8,7 +8,7 @@
 **Localisation.** For each block, coefficients on unreachable bins add log-likelihood for "not double-compressed" (Lin et al. 2009 style, with P(reachable | DQ) = 0.97 and P(reachable | single) = the envelope-expected mass), aggregated over 3×3 blocks and mapped through a logistic. A connected region ≥ 24 blocks (0.4–60 % of the image) above 0.85 yields a **high** finding.
 
 ## Block-grid analysis (pixel domain)
-Boundary-ness of luma steps is accumulated per phase (x mod 8, y mod 8). The peak phase gives the grid offset; peak-to-median/spread is its strength. Uses: an 8×8 grid in a PNG/TIFF ⇒ earlier JPEG (low); non-zero offset ⇒ cropped after compression; 64×64 windows with a strong (≥ 3.5) grid at a different offset clustered ≥ 4 ⇒ possible paste from another JPEG (medium).
+Boundary-ness of luma steps is accumulated per phase (x mod 8, y mod 8). The peak phase gives the grid offset; its strength is the margin of the peak over the *second-best* phase divided by the spread, averaged over both directions (a JPEG grid has one dominant phase, whereas Bayer demosaicing and period-2/4 textures light up several phases). Images smaller than 128 px are not analysed. Uses: an 8×8 grid in a PNG/TIFF ⇒ earlier JPEG (low); non-zero offset ⇒ cropped after compression; 64×64 windows with a strong (≥ 3.5) grid at a different offset clustered ≥ 4 ⇒ possible paste from another JPEG (medium).
 
 ## Failure modes
 - q1 = q2 or q1 dividing q2 leaves no trace; q2 much coarser than q1 hides it.

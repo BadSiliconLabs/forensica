@@ -192,7 +192,7 @@ mod tests {
         let mut buf = std::io::Cursor::new(Vec::new());
         image::DynamicImage::ImageRgb8(d).write_to(&mut buf, image::ImageFormat::Png).unwrap();
         let r = run(buf.into_inner(), "x.png");
-        assert!(r.findings.iter().any(|f| f.code == "grid.previous_jpeg"), "{:?}", r.findings);
+        assert!(r.findings.iter().any(|f| f.code == "grid.previous_jpeg"), "{}", r.raw["grid"]["global"]);
     }
 
     #[test]

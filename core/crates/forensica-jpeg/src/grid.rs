@@ -22,9 +22,9 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// Combined strength.
+    /// Combined strength (mean of both directions: real grids can be weaker along one axis).
     pub fn strength(&self) -> f32 {
-        self.sx.min(self.sy)
+        0.5 * (self.sx + self.sy)
     }
 }
 
@@ -69,9 +69,12 @@ fn peak(p: &[f32; 8]) -> (u8, f32) {
     let mut s = *p;
     s.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     let med = 0.5 * (s[3] + s[4]);
+    let second = s[6];
     let spread = s.iter().map(|v| (v - med).abs()).sum::<f32>() / 8.0;
+    // A JPEG grid has ONE dominant phase. Period-2/4 patterns (Bayer demosaicing, textures)
+    // light up several phases equally, so measure the margin over the second-best phase.
     // Boundary between x=i and x=i+1 → grid starts at i+1.
-    (((i + 1) % 8) as u8, (m - med) / spread.max(1e-3))
+    (((i + 1) % 8) as u8, (m - second) / spread.max(1e-3))
 }
 
 /// Estimates the grid over a window.
@@ -99,13 +102,17 @@ pub struct GridAnalysis {
 /// Strength above which a grid is considered present.
 pub const PRESENT: f32 = 2.2;
 
+/// Images smaller than this (either side) are not analysed.
+pub const MIN_SIDE: usize = 128;
+
 /// Local window strength above which a differing grid is counted.
 pub const LOCAL: f32 = 3.5;
 
 /// Runs the analysis.
 pub fn analyse(img: &RgbImage) -> GridAnalysis {
     let (l, w, h) = luma(img);
-    let global = estimate(&l, w, 0, w, 0, h);
+    // Tiny images do not carry enough boundaries for a reliable estimate.
+    let global = if w < MIN_SIDE || h < MIN_SIDE { Grid { dx: 0, dy: 0, sx: 0.0, sy: 0.0 } } else { estimate(&l, w, 0, w, 0, h) };
     let window = 64;
     let (mw, mh) = (w / window, h / window);
     let mut mismatch = vec![0f32; mw * mh];
