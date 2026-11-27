@@ -94,5 +94,7 @@
   "chooseImages": "Scegli immagini",
   "similarItem": "distanza {d} · {w}×{h}",
   "searching": "Ricerca in corso…",
-  "openThis": "Analizza questo file"
+  "openThis": "Analizza questo file",
+  "exportReport": "Esporta report",
+  "viewerLabel": "Immagine {name}, livello {layer}"
 }

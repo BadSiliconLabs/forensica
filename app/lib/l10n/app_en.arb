@@ -242,5 +242,17 @@
     }
   },
   "searching": "Searching…",
-  "openThis": "Analyse this file"
+  "openThis": "Analyse this file",
+  "exportReport": "Export report",
+  "viewerLabel": "Image {name}, showing {layer}",
+  "@viewerLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "layer": {
+        "type": "String"
+      }
+    }
+  }
 }

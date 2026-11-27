@@ -288,3 +288,39 @@ pub fn write_all(dir: &Path) -> Result<usize, String> {
     .map_err(|e| e.to_string())?;
     Ok(n)
 }
+
+#[cfg(test)]
+mod tests {
+    use forensica_core::{CancelToken, ImageInput, Options, Severity};
+
+    fn codes(path: &std::path::Path) -> Vec<(String, Severity)> {
+        let input = ImageInput::from_path(path).unwrap();
+        let r = forensica_engine::build_pipeline().run(&input, &Options::default(), &CancelToken::new(), &|_| {});
+        assert!(r.modules.iter().all(|m| m.error.is_none()), "{:?}", r.modules.iter().filter_map(|m| m.error.clone()).collect::<Vec<_>>());
+        r.findings().into_iter().map(|f| (f.code.clone(), f.severity)).collect()
+    }
+
+    #[test]
+    fn every_sample_triggers_its_detector_and_the_original_stays_quiet() {
+        let dir = std::env::temp_dir().join(format!("forensica-samples-{}", std::process::id()));
+        super::write_all(&dir).unwrap();
+        let expect = [
+            ("02-spliced-resaved.jpg", vec!["djpeg.aligned", "djpeg.local_inconsistency", "meta.editing_software", "meta.modified_after_capture"]),
+            ("03-copy-move.jpg", vec!["copymove.detected"]),
+            ("04-upscaled.png", vec!["resample.global"]),
+            ("05-generator-parameters.png", vec!["gen.sd_parameters"]),
+            ("06-appended-archive.jpg", vec!["jpeg.hidden_payload"]),
+            ("07-thumbnail-mismatch.jpg", vec!["meta.thumbnail_mismatch"]),
+            ("08-declared-ai.jpg", vec!["gen.digital_source_type"]),
+        ];
+        for (file, want) in expect {
+            let got = codes(&dir.join(file));
+            for w in want {
+                assert!(got.iter().any(|(c, _)| c == w), "{file}: missing {w} in {got:?}");
+            }
+        }
+        let original = codes(&dir.join("01-camera-original.jpg"));
+        assert!(original.iter().all(|(_, s)| *s <= Severity::Low), "original: {original:?}");
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+}

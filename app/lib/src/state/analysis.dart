@@ -54,20 +54,19 @@ class AnalysisState {
     ReportDto? report,
     String? Function()? error,
     List<VizDto>? customLayers,
-  }) =>
-      AnalysisState(
-        session: session ?? this.session,
-        preview: preview ?? this.preview,
-        previewScale: previewScale ?? this.previewScale,
-        opening: opening ?? this.opening,
-        running: running ?? this.running,
-        completed: completed ?? this.completed,
-        total: total ?? this.total,
-        stages: stages ?? this.stages,
-        report: report ?? this.report,
-        error: error != null ? error() : this.error,
-        customLayers: customLayers ?? this.customLayers,
-      );
+  }) => AnalysisState(
+    session: session ?? this.session,
+    preview: preview ?? this.preview,
+    previewScale: previewScale ?? this.previewScale,
+    opening: opening ?? this.opening,
+    running: running ?? this.running,
+    completed: completed ?? this.completed,
+    total: total ?? this.total,
+    stages: stages ?? this.stages,
+    report: report ?? this.report,
+    error: error != null ? error() : this.error,
+    customLayers: customLayers ?? this.customLayers,
+  );
 
   /// Every finding, most severe first.
   List<FindingDto> get findings {
@@ -83,16 +82,28 @@ class AnalysisState {
 
   /// All visualizations from the report plus custom layers.
   List<VizDto> get layers => [
-        for (final m in report?.modules ?? const <ModuleRunDto>[]) ...m.visualizations,
-        ...customLayers,
-      ];
+    for (final m in report?.modules ?? const <ModuleRunDto>[])
+      ...m.visualizations,
+    ...customLayers,
+  ];
 
-  static int _rank(String s) => switch (s) { 'high' => 3, 'medium' => 2, 'low' => 1, _ => 0 };
+  static int _rank(String s) => switch (s) {
+    'high' => 3,
+    'medium' => 2,
+    'low' => 1,
+    _ => 0,
+  };
 }
 
 Future<ui.Image> _decodeRgba(PreviewDto p) {
   final c = Completer<ui.Image>();
-  ui.decodeImageFromPixels(p.rgba, p.width, p.height, ui.PixelFormat.rgba8888, c.complete);
+  ui.decodeImageFromPixels(
+    p.rgba,
+    p.width,
+    p.height,
+    ui.PixelFormat.rgba8888,
+    c.complete,
+  );
   return c.future;
 }
 
@@ -116,7 +127,10 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
       ui.Image? img;
       var scale = 1.0;
       if (info.decodable) {
-        final p = await engine.preview(id: info.id, maxSide: Platform.isAndroid ? 2048 : 4096);
+        final p = await engine.preview(
+          id: info.id,
+          maxSide: Platform.isAndroid ? 2048 : 4096,
+        );
         img = await _decodeRgba(p);
         scale = p.scale;
       }
@@ -147,29 +161,42 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
     final s = state.session;
     if (s == null) return;
     await _sub?.cancel();
-    state = state.copyWith(running: true, completed: 0, total: 0, stages: {}, error: () => null);
-    final done = Completer<void>();
-    _sub = engine.analyze(id: s.id, options: _options()).listen(
-      (e) {
-        if (e.report != null) {
-          state = state.copyWith(report: e.report, running: false, completed: e.completed, total: e.total);
-        } else {
-          state = state.copyWith(
-            completed: e.completed,
-            total: e.total,
-            stages: {...state.stages, e.moduleId: e.stage},
-          );
-        }
-      },
-      onError: (Object e) {
-        state = state.copyWith(running: false, error: () => e.toString());
-        if (!done.isCompleted) done.complete();
-      },
-      onDone: () {
-        if (state.running) state = state.copyWith(running: false);
-        if (!done.isCompleted) done.complete();
-      },
+    state = state.copyWith(
+      running: true,
+      completed: 0,
+      total: 0,
+      stages: {},
+      error: () => null,
     );
+    final done = Completer<void>();
+    _sub = engine
+        .analyze(id: s.id, options: _options())
+        .listen(
+          (e) {
+            if (e.report != null) {
+              state = state.copyWith(
+                report: e.report,
+                running: false,
+                completed: e.completed,
+                total: e.total,
+              );
+            } else {
+              state = state.copyWith(
+                completed: e.completed,
+                total: e.total,
+                stages: {...state.stages, e.moduleId: e.stage},
+              );
+            }
+          },
+          onError: (Object e) {
+            state = state.copyWith(running: false, error: () => e.toString());
+            if (!done.isCompleted) done.complete();
+          },
+          onDone: () {
+            if (state.running) state = state.copyWith(running: false);
+            if (!done.isCompleted) done.complete();
+          },
+        );
     return done.future;
   }
 
@@ -181,7 +208,9 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
 
   /// Adds a layer produced by an interactive tool, replacing one with the same id.
   void addLayer(VizDto v) {
-    state = state.copyWith(customLayers: [...state.customLayers.where((l) => l.id != v.id), v]);
+    state = state.copyWith(
+      customLayers: [...state.customLayers.where((l) => l.id != v.id), v],
+    );
   }
 
   /// Closes the file and deletes temporary copies.
@@ -199,4 +228,6 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
   }
 }
 
-final analysisProvider = NotifierProvider<AnalysisNotifier, AnalysisState>(AnalysisNotifier.new);
+final analysisProvider = NotifierProvider<AnalysisNotifier, AnalysisState>(
+  AnalysisNotifier.new,
+);

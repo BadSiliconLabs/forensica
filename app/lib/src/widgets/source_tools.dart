@@ -11,7 +11,10 @@ import '../state/analysis.dart';
 
 Future<List<String>> _pickImages() async {
   final files = await FilePicker.pickFiles(type: FileType.image);
-  return [for (final f in files) if (f.path != null) f.path!];
+  return [
+    for (final f in files)
+      if (f.path != null) f.path!,
+  ];
 }
 
 /// PRNU comparison against user-chosen reference photos.
@@ -64,8 +67,19 @@ class _PrnuSectionState extends ConsumerState<PrnuSection> {
             icon: const Icon(Icons.photo_library_outlined),
             label: Text(l.chooseReferences),
           ),
-          if (_busy) const Padding(padding: EdgeInsets.only(top: 8), child: LinearProgressIndicator()),
-          if (_error != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(_error!, style: TextStyle(color: theme.colorScheme.error))),
+          if (_busy)
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: LinearProgressIndicator(),
+            ),
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                _error!,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+            ),
           if (r != null)
             Card(
               margin: const EdgeInsets.only(top: 8),
@@ -76,12 +90,21 @@ class _PrnuSectionState extends ConsumerState<PrnuSection> {
                   children: [
                     Text(
                       r.pce >= r.threshold
-                          ? l.prnuMatch(r.pce.toStringAsFixed(1), r.threshold.toStringAsFixed(0))
-                          : l.prnuNoMatch(r.pce.toStringAsFixed(1), r.threshold.toStringAsFixed(0)),
+                          ? l.prnuMatch(
+                              r.pce.toStringAsFixed(1),
+                              r.threshold.toStringAsFixed(0),
+                            )
+                          : l.prnuNoMatch(
+                              r.pce.toStringAsFixed(1),
+                              r.threshold.toStringAsFixed(0),
+                            ),
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 4),
-                    Text(l.prnuDetails(r.references, r.skipped, r.crop), style: theme.textTheme.bodySmall),
+                    Text(
+                      l.prnuDetails(r.references, r.skipped, r.crop),
+                      style: theme.textTheme.bodySmall,
+                    ),
                   ],
                 ),
               ),
@@ -114,7 +137,11 @@ class _DuplicatesSectionState extends ConsumerState<DuplicatesSection> {
       _results = null;
     });
     try {
-      final r = await engine.findSimilar(id: s.id, paths: paths, maxDistance: 12);
+      final r = await engine.findSimilar(
+        id: s.id,
+        paths: paths,
+        maxDistance: 12,
+      );
       setState(() => _results = r);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -156,8 +183,26 @@ class _DuplicatesSectionState extends ConsumerState<DuplicatesSection> {
               ),
             ],
           ),
-          if (_busy) Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)), const SizedBox(width: 8), Text(l.searching)])),
-          if (r != null && r.isEmpty) Padding(padding: const EdgeInsets.only(top: 8), child: Text(l.noDuplicates)),
+          if (_busy)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(l.searching),
+                ],
+              ),
+            ),
+          if (r != null && r.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(l.noDuplicates),
+            ),
           if (r != null)
             for (final m in r)
               ListTile(
@@ -165,14 +210,28 @@ class _DuplicatesSectionState extends ConsumerState<DuplicatesSection> {
                 contentPadding: EdgeInsets.zero,
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
-                  child: Image.file(File(m.path), width: 48, height: 48, fit: BoxFit.cover, cacheWidth: 96, errorBuilder: (_, _, _) => const Icon(Icons.image_not_supported_outlined)),
+                  child: Image.file(
+                    File(m.path),
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    cacheWidth: 96,
+                    errorBuilder: (_, _, _) =>
+                        const Icon(Icons.image_not_supported_outlined),
+                  ),
                 ),
-                title: Text(m.path.split(Platform.pathSeparator).last, overflow: TextOverflow.ellipsis),
-                subtitle: Text(l.similarItem(m.phashDistance, m.width, m.height)),
+                title: Text(
+                  m.path.split(Platform.pathSeparator).last,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  l.similarItem(m.phashDistance, m.width, m.height),
+                ),
                 trailing: IconButton(
                   tooltip: l.openThis,
                   icon: const Icon(Icons.open_in_new),
-                  onPressed: () => ref.read(analysisProvider.notifier).open(m.path),
+                  onPressed: () =>
+                      ref.read(analysisProvider.notifier).open(m.path),
                 ),
               ),
         ],

@@ -333,4 +333,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openThis => 'Analyse this file';
+
+  @override
+  String get exportReport => 'Export report';
+
+  @override
+  String viewerLabel(String name, String layer) {
+    return 'Image $name, showing $layer';
+  }
 }

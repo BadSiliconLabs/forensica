@@ -1,3 +1,4 @@
+#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))]
 //! `forensica-cli`: headless front-end to the Forensica engine (offline).
 //!
 //! ```text

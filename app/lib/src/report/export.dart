@@ -15,7 +15,11 @@ String _baseName(String name) {
 }
 
 Future<String?> _save(String fileName, Uint8List bytes, String mime) async {
-  final uri = await FilePicker.saveFile(fileName: fileName, bytes: bytes, mimeType: mime);
+  final uri = await FilePicker.saveFile(
+    fileName: fileName,
+    bytes: bytes,
+    mimeType: mime,
+  );
   if (uri == null) return null;
   if (uri.scheme == 'file') {
     final f = File(uri.toFilePath());
@@ -40,5 +44,9 @@ Future<String?> exportJson(AnalysisState a) async {
   final s = a.session;
   if (s == null) return null;
   final json = await engine.reportJson(id: s.id);
-  return _save('${_baseName(s.name)}.forensica.json', Uint8List.fromList(utf8.encode(json)), 'application/json');
+  return _save(
+    '${_baseName(s.name)}.forensica.json',
+    Uint8List.fromList(utf8.encode(json)),
+    'application/json',
+  );
 }

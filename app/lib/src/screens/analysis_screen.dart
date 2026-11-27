@@ -21,8 +21,12 @@ class AnalysisScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final where = pdf ? await exportPdf(ref.read(analysisProvider), l) : await exportJson(ref.read(analysisProvider));
-      if (where != null) messenger.showSnackBar(SnackBar(content: Text(l.saved(where))));
+      final where = pdf
+          ? await exportPdf(ref.read(analysisProvider), l)
+          : await exportJson(ref.read(analysisProvider));
+      if (where != null) {
+        messenger.showSnackBar(SnackBar(content: Text(l.saved(where))));
+      }
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(l.exportFailed('$e'))));
     }
@@ -36,19 +40,25 @@ class AnalysisScreen extends ConsumerWidget {
     if (s == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: a.opening ? const CircularProgressIndicator() : Text(a.error ?? '')),
+        body: Center(
+          child: a.opening
+              ? const CircularProgressIndicator()
+              : Text(a.error ?? ''),
+        ),
       );
     }
     final notifier = ref.read(analysisProvider.notifier);
+    Future<void> closeFile() async {
+      ref.read(viewerProvider.notifier).reset();
+      await notifier.close();
+      if (context.mounted) context.go('/');
+    }
+
     final appBar = AppBar(
       leading: IconButton(
         tooltip: l.closeFile,
         icon: const Icon(Icons.close),
-        onPressed: () async {
-          ref.read(viewerProvider.notifier).reset();
-          await notifier.close();
-          if (context.mounted) context.go('/');
-        },
+        onPressed: () => closeFile(),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,98 +67,163 @@ class AnalysisScreen extends ConsumerWidget {
           InkWell(
             onTap: () {
               Clipboard.setData(ClipboardData(text: s.sha256));
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.copied)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(l.copied)));
             },
             child: Text(
               '${l.sha256} ${shortSha(s.sha256)}',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontFamily: 'monospace'),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(fontFamily: 'monospace'),
             ),
           ),
         ],
       ),
       actions: [
         if (a.running)
-          TextButton.icon(onPressed: notifier.cancel, icon: const Icon(Icons.stop_circle_outlined), label: Text(l.cancel))
+          TextButton.icon(
+            onPressed: notifier.cancel,
+            icon: const Icon(Icons.stop_circle_outlined),
+            label: Text(l.cancel),
+          )
         else
-          IconButton(tooltip: l.rerun, icon: const Icon(Icons.refresh), onPressed: notifier.run),
+          IconButton(
+            tooltip: l.rerun,
+            icon: const Icon(Icons.refresh),
+            onPressed: notifier.run,
+          ),
         PopupMenuButton<String>(
+          tooltip: l.exportReport,
           enabled: a.report != null && !a.running,
           onSelected: (v) => _export(context, ref, v == 'pdf'),
           itemBuilder: (c) => [
-            PopupMenuItem(value: 'pdf', child: ListTile(leading: const Icon(Icons.picture_as_pdf_outlined), title: Text(l.exportPdf))),
-            PopupMenuItem(value: 'json', child: ListTile(leading: const Icon(Icons.data_object), title: Text(l.exportJson))),
+            PopupMenuItem(
+              value: 'pdf',
+              child: ListTile(
+                leading: const Icon(Icons.picture_as_pdf_outlined),
+                title: Text(l.exportPdf),
+              ),
+            ),
+            PopupMenuItem(
+              value: 'json',
+              child: ListTile(
+                leading: const Icon(Icons.data_object),
+                title: Text(l.exportJson),
+              ),
+            ),
           ],
           icon: const Icon(Icons.ios_share),
         ),
-        IconButton(tooltip: l.settings, icon: const Icon(Icons.settings_outlined), onPressed: () => context.push('/settings')),
+        IconButton(
+          tooltip: l.settings,
+          icon: const Icon(Icons.settings_outlined),
+          onPressed: () => context.push('/settings'),
+        ),
       ],
       bottom: a.running
           ? PreferredSize(
               preferredSize: const Size.fromHeight(4),
               child: Semantics(
                 label: l.analyzing(a.completed, a.total),
-                child: LinearProgressIndicator(value: a.total == 0 ? null : a.completed / a.total),
+                child: LinearProgressIndicator(
+                  value: a.total == 0 ? null : a.completed / a.total,
+                ),
               ),
             )
           : null,
     );
 
-    return LayoutBuilder(builder: (context, cons) {
-      final wide = cons.maxWidth >= 900;
-      if (wide) {
-        return Scaffold(
-          appBar: appBar,
-          body: Row(
-            children: [
-              const Expanded(child: ImageViewer()),
-              const VerticalDivider(width: 1),
-              SizedBox(
-                width: cons.maxWidth >= 1300 ? 480 : 400,
-                child: DefaultTabController(
-                  length: 3,
-                  child: Column(
-                    children: [
-                      TabBar(tabs: [Tab(text: l.findings), Tab(text: l.metadata), Tab(text: l.tools)]),
-                      const Expanded(child: TabBarView(children: [FindingsPanel(), MetadataPanel(), ToolsPanel()])),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-      return DefaultTabController(
-        length: 4,
-        child: Scaffold(
-          appBar: appBar,
-          body: Column(
-            children: [
-              TabBar(
-                isScrollable: true,
-                tabs: [Tab(text: l.findings), Tab(text: l.image), Tab(text: l.metadata), Tab(text: l.tools)],
-              ),
-              Expanded(
-                child: TabBarView(
-                  physics: const NeverScrollableScrollPhysics(),
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyR, control: true): () {
+          if (!a.running) notifier.run();
+        },
+        const SingleActivator(LogicalKeyboardKey.keyW, control: true):
+            closeFile,
+        const SingleActivator(LogicalKeyboardKey.escape): () {
+          if (a.running) notifier.cancel();
+        },
+      },
+      child: Focus(
+        autofocus: true,
+        child: LayoutBuilder(
+          builder: (context, cons) {
+            final wide = cons.maxWidth >= 900;
+            if (wide) {
+              return Scaffold(
+                appBar: appBar,
+                body: Row(
                   children: [
-                    const FindingsPanel(),
-                    Column(
-                      children: [
-                        const Expanded(child: ImageViewer()),
-                        _QuickLayerBar(onMore: () => _showTools(context)),
+                    const Expanded(child: ImageViewer()),
+                    const VerticalDivider(width: 1),
+                    SizedBox(
+                      width: cons.maxWidth >= 1300 ? 480 : 400,
+                      child: DefaultTabController(
+                        length: 3,
+                        child: Column(
+                          children: [
+                            TabBar(
+                              tabs: [
+                                Tab(text: l.findings),
+                                Tab(text: l.metadata),
+                                Tab(text: l.tools),
+                              ],
+                            ),
+                            const Expanded(
+                              child: TabBarView(
+                                children: [
+                                  FindingsPanel(),
+                                  MetadataPanel(),
+                                  ToolsPanel(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return DefaultTabController(
+              length: 4,
+              child: Scaffold(
+                appBar: appBar,
+                body: Column(
+                  children: [
+                    TabBar(
+                      isScrollable: true,
+                      tabs: [
+                        Tab(text: l.findings),
+                        Tab(text: l.image),
+                        Tab(text: l.metadata),
+                        Tab(text: l.tools),
                       ],
                     ),
-                    const MetadataPanel(),
-                    const ToolsPanel(),
+                    Expanded(
+                      child: TabBarView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          const FindingsPanel(),
+                          Column(
+                            children: [
+                              const Expanded(child: ImageViewer()),
+                              _QuickLayerBar(onMore: () => _showTools(context)),
+                            ],
+                          ),
+                          const MetadataPanel(),
+                          const ToolsPanel(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         ),
-      );
-    });
+      ),
+    );
   }
 
   void _showTools(BuildContext context) {
@@ -156,7 +231,8 @@ class AnalysisScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (c) => const FractionallySizedBox(heightFactor: 0.6, child: ToolsPanel()),
+      builder: (c) =>
+          const FractionallySizedBox(heightFactor: 0.6, child: ToolsPanel()),
     );
   }
 }
@@ -186,7 +262,8 @@ class _QuickLayerBar extends ConsumerWidget {
                   ChoiceChip(
                     label: Text(l.originalImage),
                     selected: v.layerId == null,
-                    onSelected: (_) => ref.read(viewerProvider.notifier).select(null),
+                    onSelected: (_) =>
+                        ref.read(viewerProvider.notifier).select(null),
                   ),
                   for (final x in layers)
                     Padding(
@@ -194,13 +271,18 @@ class _QuickLayerBar extends ConsumerWidget {
                       child: ChoiceChip(
                         label: Text(x.title),
                         selected: v.layerId == x.id,
-                        onSelected: (_) => ref.read(viewerProvider.notifier).select(x.id),
+                        onSelected: (_) =>
+                            ref.read(viewerProvider.notifier).select(x.id),
                       ),
                     ),
                 ],
               ),
             ),
-            IconButton(tooltip: l.tools, icon: const Icon(Icons.tune), onPressed: onMore),
+            IconButton(
+              tooltip: l.tools,
+              icon: const Icon(Icons.tune),
+              onPressed: onMore,
+            ),
           ],
         ),
       ),

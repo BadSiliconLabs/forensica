@@ -1,0 +1,40 @@
+# cargo-deny configuration: licence compatibility with AGPL-3.0-or-later.
+[graph]
+all-features = false
+
+[licenses]
+confidence-threshold = 0.9
+# allo-isolate (flutter_rust_bridge dependency) has no `license` field; its repository is Apache-2.0/MIT.
+allow = [
+    "MIT",
+    "MIT-0",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Zlib",
+    "Unicode-3.0",
+    "CC0-1.0",
+    "BSL-1.0",
+    "AGPL-3.0-or-later",
+]
+
+[bans]
+multiple-versions = "allow"
+# Network clients must never enter the dependency tree (offline principle).
+deny = [
+    { name = "reqwest" },
+    { name = "ureq" },
+    { name = "hyper" },
+    { name = "curl" },
+    { name = "isahc" },
+    { name = "surf" },
+    { name = "attohttpc" },
+]
+
+[advisories]
+ignore = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

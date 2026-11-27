@@ -14,8 +14,14 @@ import 'state/settings.dart';
 final _router = GoRouter(
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-    GoRoute(path: '/analysis', builder: (context, state) => const AnalysisScreen()),
-    GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
+    GoRoute(
+      path: '/analysis',
+      builder: (context, state) => const AnalysisScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
     GoRoute(path: '/batch', builder: (context, state) => const BatchScreen()),
   ],
 );
@@ -61,7 +67,10 @@ class _ForensicaAppState extends ConsumerState<ForensicaApp> {
       themeMode: settings.themeMode,
       locale: settings.locale,
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: const [AppLocalizations.delegate, ...GlobalMaterialLocalizations.delegates],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+      ],
       routerConfig: _router,
     );
   }

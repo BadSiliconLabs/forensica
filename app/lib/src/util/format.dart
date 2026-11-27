@@ -11,12 +11,14 @@ String formatBytes(int bytes) {
 }
 
 /// Short SHA for headers.
-String shortSha(String sha) => sha.length > 16 ? '${sha.substring(0, 8)}…${sha.substring(sha.length - 8)}' : sha;
+String shortSha(String sha) => sha.length > 16
+    ? '${sha.substring(0, 8)}…${sha.substring(sha.length - 8)}'
+    : sha;
 
 /// Severity ordering (higher = more severe).
 int severityRank(String s) => switch (s) {
-      'high' => 3,
-      'medium' => 2,
-      'low' => 1,
-      _ => 0,
-    };
+  'high' => 3,
+  'medium' => 2,
+  'low' => 1,
+  _ => 0,
+};

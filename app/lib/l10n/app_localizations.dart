@@ -667,6 +667,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Analyse this file'**
   String get openThis;
+
+  /// No description provided for @exportReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export report'**
+  String get exportReport;
+
+  /// No description provided for @viewerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Image {name}, showing {layer}'**
+  String viewerLabel(String name, String layer);
 }
 
 class _AppLocalizationsDelegate

@@ -32,30 +32,34 @@ class Settings {
     int? maxMegapixels,
     int? elaQuality,
     Set<String>? disabledModules,
-  }) =>
-      Settings(
-        themeMode: themeMode ?? this.themeMode,
-        locale: locale != null ? locale() : this.locale,
-        maxMegapixels: maxMegapixels ?? this.maxMegapixels,
-        elaQuality: elaQuality ?? this.elaQuality,
-        disabledModules: disabledModules ?? this.disabledModules,
-      );
+  }) => Settings(
+    themeMode: themeMode ?? this.themeMode,
+    locale: locale != null ? locale() : this.locale,
+    maxMegapixels: maxMegapixels ?? this.maxMegapixels,
+    elaQuality: elaQuality ?? this.elaQuality,
+    disabledModules: disabledModules ?? this.disabledModules,
+  );
 
   Map<String, Object?> toJson() => {
-        'themeMode': themeMode.name,
-        'locale': locale?.languageCode,
-        'maxMegapixels': maxMegapixels,
-        'elaQuality': elaQuality,
-        'disabledModules': disabledModules.toList(),
-      };
+    'themeMode': themeMode.name,
+    'locale': locale?.languageCode,
+    'maxMegapixels': maxMegapixels,
+    'elaQuality': elaQuality,
+    'disabledModules': disabledModules.toList(),
+  };
 
   static Settings fromJson(Map<String, Object?> j) => Settings(
-        themeMode: ThemeMode.values.firstWhere((m) => m.name == j['themeMode'], orElse: () => ThemeMode.system),
-        locale: j['locale'] is String ? Locale(j['locale']! as String) : null,
-        maxMegapixels: (j['maxMegapixels'] as num?)?.toInt() ?? defaultMegapixels,
-        elaQuality: (j['elaQuality'] as num?)?.toInt() ?? 90,
-        disabledModules: {...((j['disabledModules'] as List?) ?? const []).whereType<String>()},
-      );
+    themeMode: ThemeMode.values.firstWhere(
+      (m) => m.name == j['themeMode'],
+      orElse: () => ThemeMode.system,
+    ),
+    locale: j['locale'] is String ? Locale(j['locale']! as String) : null,
+    maxMegapixels: (j['maxMegapixels'] as num?)?.toInt() ?? defaultMegapixels,
+    elaQuality: (j['elaQuality'] as num?)?.toInt() ?? 90,
+    disabledModules: {
+      ...((j['disabledModules'] as List?) ?? const []).whereType<String>(),
+    },
+  );
 }
 
 /// Settings state.
@@ -75,7 +79,9 @@ class SettingsNotifier extends Notifier<Settings> {
     try {
       final f = await _file();
       if (await f.exists()) {
-        state = Settings.fromJson(jsonDecode(await f.readAsString()) as Map<String, Object?>);
+        state = Settings.fromJson(
+          jsonDecode(await f.readAsString()) as Map<String, Object?>,
+        );
       }
     } catch (_) {
       // Corrupt or unreadable settings: keep defaults.
@@ -94,4 +100,6 @@ class SettingsNotifier extends Notifier<Settings> {
   }
 }
 
-final settingsProvider = NotifierProvider<SettingsNotifier, Settings>(SettingsNotifier.new);
+final settingsProvider = NotifierProvider<SettingsNotifier, Settings>(
+  SettingsNotifier.new,
+);

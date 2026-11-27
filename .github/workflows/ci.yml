@@ -34,6 +34,11 @@ jobs:
       - name: test
         working-directory: core
         run: cargo test
+      - name: licences and banned network crates
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: core/Cargo.toml
+          command: check licenses bans sources
 
   flutter-linux:
     name: Flutter (analyze, test, Linux build)
