@@ -8,6 +8,7 @@ import '../rust/api/engine.dart' as engine;
 import '../state/analysis.dart';
 import '../state/viewer.dart';
 import '../util/format.dart';
+import 'source_tools.dart';
 
 /// Layers, comparison controls, interactive renderers and file details.
 class ToolsPanel extends ConsumerStatefulWidget {
@@ -148,6 +149,10 @@ class _ToolsPanelState extends ConsumerState<ToolsPanel> {
             ),
           ),
           if (_busy) const LinearProgressIndicator(),
+          header(l.duplicates),
+          const DuplicatesSection(),
+          header(l.prnu),
+          const PrnuSection(),
         ],
         if (standalone.isNotEmpty) ...[
           header(l.otherViews),

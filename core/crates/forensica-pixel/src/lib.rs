@@ -12,8 +12,11 @@ pub mod ela;
 pub mod gray;
 pub mod illuminant;
 pub mod noise;
+pub mod phash;
+pub mod prnu;
 pub mod resampling;
 pub mod spectrum;
+pub mod synthetic;
 
 /// All modules provided by this crate.
 pub fn modules() -> Vec<Arc<dyn AnalysisModule>> {
@@ -25,5 +28,7 @@ pub fn modules() -> Vec<Arc<dyn AnalysisModule>> {
         Arc::new(copymove::CopyMoveModule),
         Arc::new(cfa::CfaModule),
         Arc::new(illuminant::IlluminantModule),
+        Arc::new(phash::HashModule),
+        Arc::new(synthetic::SyntheticModule),
     ]
 }

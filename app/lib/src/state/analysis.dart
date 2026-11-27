@@ -9,6 +9,7 @@ import '../platform/intake.dart';
 import '../rust/api/dto.dart';
 import '../rust/api/engine.dart' as engine;
 import 'settings.dart';
+import 'viewer.dart';
 
 /// State of the currently open file and its analysis.
 @immutable
@@ -108,6 +109,7 @@ class AnalysisNotifier extends Notifier<AnalysisState> {
   /// Opens [path] read-only and starts the analysis.
   Future<void> open(String path) async {
     await close();
+    ref.read(viewerProvider.notifier).reset();
     state = const AnalysisState(opening: true);
     try {
       final info = await engine.openSession(path: path);

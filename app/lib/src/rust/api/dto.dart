@@ -8,7 +8,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `severity_str`, `viz_dto`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`
 
 /// Streamed analysis event: progress updates, then one event with `report` set.
 class AnalysisEvent {
@@ -344,6 +344,53 @@ class PreviewDto {
           rgba == other.rgba;
 }
 
+/// PRNU comparison result.
+class PrnuDto {
+  /// Peak-to-correlation energy.
+  final double pce;
+  final int peakX;
+  final int peakY;
+  final int references;
+  final int skipped;
+  final int crop;
+
+  /// Usual decision threshold (60).
+  final double threshold;
+
+  const PrnuDto({
+    required this.pce,
+    required this.peakX,
+    required this.peakY,
+    required this.references,
+    required this.skipped,
+    required this.crop,
+    required this.threshold,
+  });
+
+  @override
+  int get hashCode =>
+      pce.hashCode ^
+      peakX.hashCode ^
+      peakY.hashCode ^
+      references.hashCode ^
+      skipped.hashCode ^
+      crop.hashCode ^
+      threshold.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PrnuDto &&
+          runtimeType == other.runtimeType &&
+          pce == other.pce &&
+          peakX == other.peakX &&
+          peakY == other.peakY &&
+          references == other.references &&
+          skipped == other.skipped &&
+          crop == other.crop &&
+          threshold == other.threshold;
+}
+
 /// Full report.
 class ReportDto {
   final String sha256;
@@ -442,6 +489,42 @@ class SessionInfo {
           height == other.height &&
           decodable == other.decodable &&
           extensionMismatch == other.extensionMismatch;
+}
+
+/// A near-duplicate.
+class SimilarDto {
+  final String path;
+  final int phashDistance;
+  final int dhashDistance;
+  final int width;
+  final int height;
+
+  const SimilarDto({
+    required this.path,
+    required this.phashDistance,
+    required this.dhashDistance,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  int get hashCode =>
+      path.hashCode ^
+      phashDistance.hashCode ^
+      dhashDistance.hashCode ^
+      width.hashCode ^
+      height.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SimilarDto &&
+          runtimeType == other.runtimeType &&
+          path == other.path &&
+          phashDistance == other.phashDistance &&
+          dhashDistance == other.dhashDistance &&
+          width == other.width &&
+          height == other.height;
 }
 
 /// A visualization.

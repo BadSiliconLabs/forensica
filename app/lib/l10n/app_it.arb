@@ -87,5 +87,12 @@
   "experimental": "Sperimentale",
   "copySha": "Copia SHA-256",
   "moduleTimes": "Tempi dei moduli",
-  "cached": "in cache"
+  "cached": "in cache",
+  "prnuMatch": "PCE {pce} ≥ {threshold}: il rumore del sensore corrisponde alla fotocamera di riferimento.",
+  "prnuNoMatch": "PCE {pce} < {threshold}: nessuna corrispondenza. Non conclusivo se l'immagine è stata ridimensionata, ritagliata o molto compressa.",
+  "prnuDetails": "{refs} riferimenti usati, {skipped} scartati (risoluzione diversa o illeggibili), ritaglio {crop}×{crop}.",
+  "chooseImages": "Scegli immagini",
+  "similarItem": "distanza {d} · {w}×{h}",
+  "searching": "Ricerca in corso…",
+  "openThis": "Analizza questo file"
 }

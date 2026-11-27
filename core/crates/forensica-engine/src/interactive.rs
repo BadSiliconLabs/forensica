@@ -95,3 +95,56 @@ pub fn bitplane(s: &Session, name: &str, bit: u8) -> Result<forensica_core::Visu
     let (img, _) = s.input.working_rgb(INTERACTIVE_MAX_PIXELS)?;
     forensica_pixel::channels::render_bitplane(&img, name, bit)
 }
+
+/// PCE above which a PRNU match is usually declared.
+pub const PRNU_THRESHOLD: f32 = forensica_pixel::prnu::PCE_THRESHOLD;
+
+/// PRNU comparison of the session image against reference photos from one camera.
+pub fn prnu(s: &Session, references: &[String]) -> Result<forensica_pixel::prnu::PrnuResult> {
+    use rayon::prelude::*;
+    let img = s.input.rgb()?;
+    let refs: Vec<image::RgbImage> =
+        references.par_iter().filter_map(|p| image::open(p).ok().map(|i| i.to_rgb8())).collect();
+    let failed = references.len() - refs.len();
+    let mut r = forensica_pixel::prnu::compare(&img, &refs)?;
+    r.skipped += failed;
+    Ok(r)
+}
+
+/// Image files in `dir` (recursing up to 3 levels, at most 5000 files).
+pub fn list_images(dir: &std::path::Path) -> Vec<String> {
+    const EXT: &[&str] = &["jpg", "jpeg", "png", "webp", "tif", "tiff", "bmp", "gif"];
+    let mut out = Vec::new();
+    let mut stack = vec![(dir.to_path_buf(), 0)];
+    while let Some((d, depth)) = stack.pop() {
+        let Ok(rd) = std::fs::read_dir(&d) else { continue };
+        for e in rd.flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                if depth < 3 {
+                    stack.push((p, depth + 1));
+                }
+            } else if p
+                .extension()
+                .map(|x| x.to_string_lossy().to_ascii_lowercase())
+                .is_some_and(|x| EXT.contains(&x.as_str()))
+            {
+                out.push(p.to_string_lossy().into_owned());
+                if out.len() >= 5000 {
+                    return out;
+                }
+            }
+        }
+    }
+    out.sort();
+    out
+}
+
+/// Near-duplicates of the session image among `paths`.
+pub fn similar(s: &Session, paths: &[String], max_distance: u32) -> Result<Vec<forensica_pixel::phash::Similar>> {
+    let (img, _) = s.input.working_rgb(4_000_000)?;
+    let own = std::fs::canonicalize(&s.path).ok();
+    let paths: Vec<String> =
+        paths.iter().filter(|p| own.is_none() || std::fs::canonicalize(p).ok() != own).cloned().collect();
+    Ok(forensica_pixel::phash::find_similar(&img, &paths, max_distance, &|| false))
+}

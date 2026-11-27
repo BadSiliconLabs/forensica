@@ -304,4 +304,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cached => 'cached';
+
+  @override
+  String prnuMatch(String pce, String threshold) {
+    return 'PCE $pce ≥ $threshold: the sensor noise matches the reference camera.';
+  }
+
+  @override
+  String prnuNoMatch(String pce, String threshold) {
+    return 'PCE $pce < $threshold: no match. Inconclusive if the image was resized, cropped or heavily compressed.';
+  }
+
+  @override
+  String prnuDetails(int refs, int skipped, int crop) {
+    return '$refs reference(s) used, $skipped skipped (different resolution or unreadable), $crop×$crop crop.';
+  }
+
+  @override
+  String get chooseImages => 'Choose images';
+
+  @override
+  String similarItem(int d, int w, int h) {
+    return 'distance $d · $w×$h';
+  }
+
+  @override
+  String get searching => 'Searching…';
+
+  @override
+  String get openThis => 'Analyse this file';
 }

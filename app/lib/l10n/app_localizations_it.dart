@@ -306,4 +306,33 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get cached => 'in cache';
+
+  @override
+  String prnuMatch(String pce, String threshold) {
+    return 'PCE $pce ≥ $threshold: il rumore del sensore corrisponde alla fotocamera di riferimento.';
+  }
+
+  @override
+  String prnuNoMatch(String pce, String threshold) {
+    return 'PCE $pce < $threshold: nessuna corrispondenza. Non conclusivo se l\'immagine è stata ridimensionata, ritagliata o molto compressa.';
+  }
+
+  @override
+  String prnuDetails(int refs, int skipped, int crop) {
+    return '$refs riferimenti usati, $skipped scartati (risoluzione diversa o illeggibili), ritaglio $crop×$crop.';
+  }
+
+  @override
+  String get chooseImages => 'Scegli immagini';
+
+  @override
+  String similarItem(int d, int w, int h) {
+    return 'distanza $d · $w×$h';
+  }
+
+  @override
+  String get searching => 'Ricerca in corso…';
+
+  @override
+  String get openThis => 'Analizza questo file';
 }
