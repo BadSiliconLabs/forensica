@@ -9,11 +9,10 @@ _Status file for the overnight build, updated after every task._
 - Rust: ~150 unit tests incl. an end-to-end test over a synthetic sample set; Flutter: unit + FFI integration test.
 
 ## Where things are
-| | |
-|---|---|
-| PR #21 `feat/scaffold-bridge` | Phase 1 (+ most of Phase 2). CI: Rust ✅, Flutter/Linux ✅; Android ❌ on the first run (runner out of disk) → fixed in a later commit (free disk, arm64+x64 only); re-run was still queued at last check. |
-| branch `feat/phase3-4` | Phases 2–5 on top of #21 (stacked). PR opened after #21 merges. |
-| `feat/manipulation-detection` (remote) | **stale duplicate** of `feat/phase3-4` (I rebased locally and a force-push was blocked, so I pushed under a new name). Safe to delete. |
+- **Public repo:** https://github.com/BadSiliconLabs/forensica — `main` = 3 commits (scaffold, phase 1, phases 2–5), CI green on the same tree.
+- **Release v0.1.0:** https://github.com/BadSiliconLabs/forensica/releases/tag/v0.1.0 — Linux x64 tarball, debug-signed APK (arm64/armv7/x86_64), SHA256SUMS.
+- History was rewritten once (authorised) so commits use only the noreply address. The old PR #21 merge commit (9489817) still exists on GitHub attached to PR #21; ask GitHub Support to purge it if needed.
+- All roadmap issues (#1–#20) are closed; feature branches deleted.
 
 ## Status by phase
 | Phase | Item | State |
