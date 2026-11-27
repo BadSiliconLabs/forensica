@@ -48,6 +48,7 @@ Future<Uint8List> buildPdfReport({
   required SessionInfo session,
   required ReportDto report,
   required AppLocalizations l,
+  Uint8List? previewPng,
   int maxVisualizations = 16,
 }) async {
   final doc = pw.Document(
