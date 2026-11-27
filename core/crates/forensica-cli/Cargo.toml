@@ -13,6 +13,7 @@ path = "src/main.rs"
 [dependencies]
 forensica-core.workspace = true
 forensica-engine.workspace = true
+forensica-pixel.workspace = true
 image.workspace = true
 kamadak-exif.workspace = true
 serde_json.workspace = true

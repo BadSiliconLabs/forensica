@@ -49,6 +49,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ReportDto dco_decode_box_autoadd_report_dto(dynamic raw);
 
   @protected
+  CompareDto dco_decode_compare_dto(dynamic raw);
+
+  @protected
   double dco_decode_f_32(dynamic raw);
 
   @protected
@@ -162,6 +165,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ReportDto sse_decode_box_autoadd_report_dto(SseDeserializer deserializer);
+
+  @protected
+  CompareDto sse_decode_compare_dto(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_32(SseDeserializer deserializer);
@@ -292,6 +298,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
     ReportDto self,
     SseSerializer serializer,
   );
+
+  @protected
+  void sse_encode_compare_dto(CompareDto self, SseSerializer serializer);
 
   @protected
   void sse_encode_f_32(double self, SseSerializer serializer);

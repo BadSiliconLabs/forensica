@@ -347,4 +347,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get rotateHint =>
       'Ruota in orizzontale per la modalità completa (tutti gli strumenti)';
+
+  @override
+  String get compareTitle => 'Confronta con un\'altra versione';
+
+  @override
+  String get compareHint =>
+      'Scegli un altro file della stessa scena (ad es. l\'originale della fotocamera o una copia condivisa). Forensica li allinea, mappa le differenze e stima quale deriva dall\'altro, anche senza metadati.';
+
+  @override
+  String get chooseOther => 'Scegli l\'altro file';
 }

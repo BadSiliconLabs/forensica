@@ -19,3 +19,4 @@ Each page explains what the module detects, how, its failure modes and reference
 | `hashes` | [phash.md](phash.md) | pHash/dHash; near-duplicate search (Tools) |
 | `synthetic` | [synthetic.md](synthetic.md) | weak AI-generation hints |
 | PRNU (Tools) | [prnu.md](prnu.md) | camera fingerprint match (PCE) |
+| Compare (Tools, CLI) | [compare.md](compare.md) | what changed between two versions, which is derived |

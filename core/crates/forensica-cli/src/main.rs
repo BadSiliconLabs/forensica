@@ -161,6 +161,41 @@ fn main() -> ExitCode {
         Some("analyze") => cmd_analyze(&args[1..]),
         Some("batch") => cmd_batch(&args[1..]),
         Some("bench") => cmd_bench(&args[1..]),
+        Some("compare") => match (args.get(1), args.get(2)) {
+            (Some(a), Some(b)) => match (image::open(a), image::open(b)) {
+                (Ok(ia), Ok(ib)) => {
+                    let r = forensica_pixel::pair::compare(&ia.to_rgb8(), &ib.to_rgb8());
+                    if let Some(out) = flag(&args, "--map") {
+                        let hi = forensica_core::viz::percentile(&r.map, 0.99).max(1.0);
+                        if let Ok(img) = forensica_core::viz::colorize(
+                            &r.map,
+                            r.map_w as u32,
+                            r.map_h as u32,
+                            0.0,
+                            hi,
+                            forensica_core::viz::Colormap::Inferno,
+                        ) {
+                            let _ = image::imageops::resize(
+                                &img,
+                                r.map_w as u32 * 8,
+                                r.map_h as u32 * 8,
+                                image::imageops::FilterType::Nearest,
+                            )
+                            .save(out);
+                        }
+                    }
+                    let mut v = serde_json::to_value(&r).unwrap_or_default();
+                    v["map"] = serde_json::Value::Null;
+                    println!("{}", serde_json::to_string_pretty(&v).unwrap_or_default());
+                    ExitCode::SUCCESS
+                }
+                _ => {
+                    eprintln!("cannot decode one of the images");
+                    ExitCode::FAILURE
+                }
+            },
+            _ => usage(),
+        },
         Some("samples") => match args.get(1) {
             Some(dir) if args.iter().any(|a| a == "--big") => match samples::write_big(Path::new(dir)) {
                 Ok(()) => {

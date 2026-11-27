@@ -213,6 +213,8 @@ class _ToolsPanelState extends ConsumerState<ToolsPanel> {
             ),
           ),
           if (_busy) const LinearProgressIndicator(),
+          header(l.compareTitle),
+          const CompareSection(),
           header(l.duplicates),
           const DuplicatesSection(),
           header(l.prnu),

@@ -345,4 +345,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rotateHint =>
       'Rotate to landscape for the complete mode (all tools)';
+
+  @override
+  String get compareTitle => 'Compare with another version';
+
+  @override
+  String get compareHint =>
+      'Pick another file showing the same scene (e.g. the camera original or a shared copy). Forensica aligns both, maps what differs, and estimates which one is derived from the other — even without metadata.';
+
+  @override
+  String get chooseOther => 'Choose the other file';
 }

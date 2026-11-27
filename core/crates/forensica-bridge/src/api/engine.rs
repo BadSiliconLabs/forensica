@@ -162,6 +162,12 @@ pub fn find_similar(id: u32, paths: Vec<String>, max_distance: u32) -> Result<Ve
         .collect())
 }
 
+/// Compares the open image with another version of the same picture.
+pub fn compare_with(id: u32, other: String) -> Result<CompareDto> {
+    let (v, f) = interactive::compare(&*session(id)?, &other)?;
+    Ok(CompareDto { viz: viz_dto("compare", &v), findings: f.iter().map(FindingDto::from).collect() })
+}
+
 #[flutter_rust_bridge::frb(init)]
 pub fn init_app() {
     flutter_rust_bridge::setup_default_user_utils();

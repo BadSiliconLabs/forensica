@@ -8,6 +8,8 @@ import '../../l10n/app_localizations.dart';
 import '../rust/api/dto.dart';
 import '../rust/api/engine.dart' as engine;
 import '../state/analysis.dart';
+import '../state/viewer.dart';
+import 'findings.dart';
 
 Future<List<String>> _pickImages() async {
   final files = await FilePicker.pickFiles(type: FileType.image);
@@ -234,6 +236,81 @@ class _DuplicatesSectionState extends ConsumerState<DuplicatesSection> {
                       ref.read(analysisProvider.notifier).open(m.path),
                 ),
               ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Pairwise comparison with another version of the same picture.
+class CompareSection extends ConsumerStatefulWidget {
+  const CompareSection({super.key});
+
+  @override
+  ConsumerState<CompareSection> createState() => _CompareSectionState();
+}
+
+class _CompareSectionState extends ConsumerState<CompareSection> {
+  List<FindingDto>? _findings;
+  String? _error;
+  bool _busy = false;
+
+  Future<void> _run() async {
+    final s = ref.read(analysisProvider).session;
+    if (s == null) return;
+    final f = await FilePicker.pickFile(
+      type: Platform.isAndroid ? FileType.image : FileType.any,
+    );
+    final path = f?.path;
+    if (path == null) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+      _findings = null;
+    });
+    try {
+      final r = await engine.compareWith(id: s.id, other: path);
+      ref.read(analysisProvider.notifier).addLayer(r.viz);
+      ref.read(viewerProvider.notifier).select(r.viz.id);
+      setState(() => _findings = r.findings);
+    } catch (e) {
+      setState(() => _error = '$e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.compareHint, style: theme.textTheme.bodySmall),
+          const SizedBox(height: 8),
+          FilledButton.tonalIcon(
+            onPressed: _busy ? null : _run,
+            icon: const Icon(Icons.compare_outlined),
+            label: Text(l.chooseOther),
+          ),
+          if (_busy)
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: LinearProgressIndicator(),
+            ),
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                _error!,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+            ),
+          for (final f in _findings ?? const <FindingDto>[])
+            FindingCard(finding: f),
         ],
       ),
     );

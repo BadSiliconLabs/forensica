@@ -685,6 +685,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rotate to landscape for the complete mode (all tools)'**
   String get rotateHint;
+
+  /// No description provided for @compareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare with another version'**
+  String get compareTitle;
+
+  /// No description provided for @compareHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick another file showing the same scene (e.g. the camera original or a shared copy). Forensica aligns both, maps what differs, and estimates which one is derived from the other — even without metadata.'**
+  String get compareHint;
+
+  /// No description provided for @chooseOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the other file'**
+  String get chooseOther;
 }
 
 class _AppLocalizationsDelegate

@@ -1206,6 +1206,7 @@ version = "0.1.0"
 dependencies = [
  "forensica-core",
  "forensica-engine",
+ "forensica-pixel",
  "image",
  "kamadak-exif",
  "serde_json",

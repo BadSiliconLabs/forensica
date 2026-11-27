@@ -148,3 +148,25 @@ pub fn similar(s: &Session, paths: &[String], max_distance: u32) -> Result<Vec<f
         paths.iter().filter(|p| own.is_none() || std::fs::canonicalize(p).ok() != own).cloned().collect();
     Ok(forensica_pixel::phash::find_similar(&img, &paths, max_distance, &|| false))
 }
+
+/// Compares the session image with another version of the same picture.
+pub fn compare(s: &Session, other: &str) -> Result<(forensica_core::Visualization, Vec<forensica_core::Finding>)> {
+    let a = s.input.rgb()?;
+    let b = image::open(other).map_err(|e| forensica_core::Error::Decode(e.to_string()))?.to_rgb8();
+    let r = forensica_pixel::pair::compare(&a, &b);
+    let hi = forensica_core::viz::percentile(&r.map, 0.99).max(1.0);
+    let viz = forensica_core::viz::heatmap(
+        "compare.map",
+        "Difference with the other version",
+        "Blocks whose content differs between this image and the other version, after resizing and alignment. A compact bright region is what was added, removed or changed.",
+        &r.map,
+        r.map_w as u32,
+        r.map_h as u32,
+        0.0,
+        hi,
+        forensica_core::viz::Colormap::Inferno,
+        "same",
+        "different",
+    )?;
+    Ok((viz, forensica_pixel::pair::indicators(&r)))
+}

@@ -8,7 +8,7 @@ import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `severity_str`, `viz_dto`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`
 
 /// Streamed analysis event: progress updates, then one event with `report` set.
 class AnalysisEvent {
@@ -85,6 +85,25 @@ class AnalysisOptions {
           elaQuality == other.elaQuality &&
           modules == other.modules &&
           extra == other.extra;
+}
+
+/// Result of comparing with another version.
+class CompareDto {
+  final VizDto viz;
+  final List<FindingDto> findings;
+
+  const CompareDto({required this.viz, required this.findings});
+
+  @override
+  int get hashCode => viz.hashCode ^ findings.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CompareDto &&
+          runtimeType == other.runtimeType &&
+          viz == other.viz &&
+          findings == other.findings;
 }
 
 /// A finding.

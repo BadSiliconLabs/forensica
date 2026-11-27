@@ -12,6 +12,7 @@ pub mod ela;
 pub mod gray;
 pub mod illuminant;
 pub mod noise;
+pub mod pair;
 pub mod phash;
 pub mod prnu;
 pub mod resampling;

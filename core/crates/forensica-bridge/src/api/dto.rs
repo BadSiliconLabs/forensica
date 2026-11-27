@@ -245,3 +245,10 @@ pub struct SimilarDto {
     pub width: u32,
     pub height: u32,
 }
+
+/// Result of comparing with another version.
+#[derive(Debug, Clone)]
+pub struct CompareDto {
+    pub viz: VizDto,
+    pub findings: Vec<FindingDto>,
+}

@@ -8,7 +8,7 @@ import 'dto.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `forensica_pixel_threshold`, `session`, `to_options`
+// These functions are ignored because they are not marked as `pub`: `session`, `to_options`
 
 /// Opens a file read-only and returns its facts (incl. SHA-256 of the original).
 Future<SessionInfo> openSession({required String path}) =>
@@ -70,6 +70,10 @@ Future<List<SimilarDto>> findSimilar({
   paths: paths,
   maxDistance: maxDistance,
 );
+
+/// Compares the open image with another version of the same picture.
+Future<CompareDto> compareWith({required int id, required String other}) =>
+    RustLib.instance.api.crateApiEngineCompareWith(id: id, other: other);
 
 /// ELA at a user-chosen JPEG quality.
 Future<VizDto> renderEla({required int id, required int quality}) =>
