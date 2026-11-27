@@ -679,6 +679,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image {name}, showing {layer}'**
   String viewerLabel(String name, String layer);
+
+  /// No description provided for @rotateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate to landscape for the complete mode (all tools)'**
+  String get rotateHint;
 }
 
 class _AppLocalizationsDelegate

@@ -147,7 +147,11 @@ class AnalysisScreen extends ConsumerWidget {
         autofocus: true,
         child: LayoutBuilder(
           builder: (context, cons) {
-            final wide = cons.maxWidth >= 900;
+            // Complete mode: landscape (phones/tablets) or any wide window (desktop).
+            // Simplified mode: portrait phones — findings, image + quick layers, metadata.
+            final landscape =
+                cons.maxWidth > cons.maxHeight && cons.maxWidth >= 600;
+            final wide = cons.maxWidth >= 900 || landscape;
             if (wide) {
               return Scaffold(
                 appBar: appBar,
@@ -156,7 +160,9 @@ class AnalysisScreen extends ConsumerWidget {
                     const Expanded(child: ImageViewer()),
                     const VerticalDivider(width: 1),
                     SizedBox(
-                      width: cons.maxWidth >= 1300 ? 480 : 400,
+                      width: cons.maxWidth >= 1300
+                          ? 480
+                          : (cons.maxWidth * 0.45).clamp(300.0, 400.0),
                       child: DefaultTabController(
                         length: 3,
                         child: Column(
@@ -186,7 +192,7 @@ class AnalysisScreen extends ConsumerWidget {
               );
             }
             return DefaultTabController(
-              length: 4,
+              length: 3,
               child: Scaffold(
                 appBar: appBar,
                 body: Column(
@@ -197,7 +203,6 @@ class AnalysisScreen extends ConsumerWidget {
                         Tab(text: l.findings),
                         Tab(text: l.image),
                         Tab(text: l.metadata),
-                        Tab(text: l.tools),
                       ],
                     ),
                     Expanded(
@@ -208,11 +213,10 @@ class AnalysisScreen extends ConsumerWidget {
                           Column(
                             children: [
                               const Expanded(child: ImageViewer()),
-                              _QuickLayerBar(onMore: () => _showTools(context)),
+                              const _QuickLayerBar(),
                             ],
                           ),
                           const MetadataPanel(),
-                          const ToolsPanel(),
                         ],
                       ),
                     ),
@@ -225,22 +229,12 @@ class AnalysisScreen extends ConsumerWidget {
       ),
     );
   }
-
-  void _showTools(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (c) =>
-          const FractionallySizedBox(heightFactor: 0.6, child: ToolsPanel()),
-    );
-  }
 }
 
-/// Horizontal chip bar to switch layers quickly on phones.
+/// Simplified (portrait) mode: horizontal chips to switch layers, plus a hint
+/// that landscape opens the complete mode.
 class _QuickLayerBar extends ConsumerWidget {
-  const _QuickLayerBar({required this.onMore});
-  final VoidCallback onMore;
+  const _QuickLayerBar();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -250,41 +244,50 @@ class _QuickLayerBar extends ConsumerWidget {
     final layers = a.layers.where((x) => x.kind != 'standalone').toList();
     return Material(
       elevation: 2,
-      child: SizedBox(
-        height: 56,
-        child: Row(
-          children: [
-            Expanded(
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                children: [
-                  ChoiceChip(
-                    label: Text(l.originalImage),
-                    selected: v.layerId == null,
-                    onSelected: (_) =>
-                        ref.read(viewerProvider.notifier).select(null),
-                  ),
-                  for (final x in layers)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 6),
-                      child: ChoiceChip(
-                        label: Text(x.title),
-                        selected: v.layerId == x.id,
-                        onSelected: (_) =>
-                            ref.read(viewerProvider.notifier).select(x.id),
-                      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 52,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              children: [
+                ChoiceChip(
+                  label: Text(l.originalImage),
+                  selected: v.layerId == null,
+                  onSelected: (_) =>
+                      ref.read(viewerProvider.notifier).select(null),
+                ),
+                for (final x in layers)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: ChoiceChip(
+                      label: Text(x.title),
+                      selected: v.layerId == x.id,
+                      onSelected: (_) =>
+                          ref.read(viewerProvider.notifier).select(x.id),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-            IconButton(
-              tooltip: l.tools,
-              icon: const Icon(Icons.tune),
-              onPressed: onMore,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: Row(
+              children: [
+                const Icon(Icons.screen_rotation, size: 16),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l.rotateHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

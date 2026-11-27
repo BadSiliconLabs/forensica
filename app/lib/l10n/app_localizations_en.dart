@@ -341,4 +341,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String viewerLabel(String name, String layer) {
     return 'Image $name, showing $layer';
   }
+
+  @override
+  String get rotateHint =>
+      'Rotate to landscape for the complete mode (all tools)';
 }

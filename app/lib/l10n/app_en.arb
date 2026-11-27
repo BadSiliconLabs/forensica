@@ -254,5 +254,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "rotateHint": "Rotate to landscape for the complete mode (all tools)"
 }

@@ -96,5 +96,6 @@
   "searching": "Ricerca in corso…",
   "openThis": "Analizza questo file",
   "exportReport": "Esporta report",
-  "viewerLabel": "Immagine {name}, livello {layer}"
+  "viewerLabel": "Immagine {name}, livello {layer}",
+  "rotateHint": "Ruota in orizzontale per la modalità completa (tutti gli strumenti)"
 }

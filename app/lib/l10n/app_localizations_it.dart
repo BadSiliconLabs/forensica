@@ -343,4 +343,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String viewerLabel(String name, String layer) {
     return 'Immagine $name, livello $layer';
   }
+
+  @override
+  String get rotateHint =>
+      'Ruota in orizzontale per la modalità completa (tutti gli strumenti)';
 }

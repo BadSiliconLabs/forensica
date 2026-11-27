@@ -36,6 +36,7 @@ _Status file for the overnight build, updated after every task._
 | 5 | PDF + JSON reports | ✅ |
 | 5 | Batch mode (Linux app + `forensica-cli batch`) | ✅ |
 | 5 | Settings, EN + IT, accessibility | ✅ (findings text is English-only, D7) |
+| + | Android portrait = simplified mode, landscape = complete mode (D17) | ✅ verified on phone-sized virtual screens |
 | 5 | Release artefacts | see "Releases" below |
 | 5 | Online-plugin interface doc | ✅ `docs/online-plugins.md` (design only) |
 
