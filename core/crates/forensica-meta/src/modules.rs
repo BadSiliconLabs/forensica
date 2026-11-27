@@ -57,10 +57,12 @@ fn compare_thumbnail(input: &ImageInput, thumb: &[u8]) -> Option<ThumbCompare> {
     };
     let (va, vb) = (norm(&a), norm(&b));
     let diff = va.iter().zip(&vb).map(|(x, y)| (x - y).abs()).sum::<f32>() / va.len() as f32 / 4.0;
+    // Localised edits: fraction of cells differing by more than one standard deviation.
+    let local = va.iter().zip(&vb).filter(|(x, y)| (*x - *y).abs() > 1.0).count() as f32 / va.len() as f32;
     // Letterboxed thumbnails keep their own aspect; report aspect of the content area.
     let letterboxed =
         (thumb_aspect - main_aspect).abs() / main_aspect > 0.06 && has_black_bars(&t, thumb_aspect > main_aspect);
-    Some(ThumbCompare { main_aspect, thumb_aspect: if letterboxed { main_aspect } else { thumb_aspect }, diff })
+    Some(ThumbCompare { main_aspect, thumb_aspect: if letterboxed { main_aspect } else { thumb_aspect }, diff, local })
 }
 
 fn has_black_bars(t: &image::GrayImage, vertical: bool) -> bool {
@@ -162,7 +164,7 @@ impl AnalysisModule for MetadataModule {
             "gps": exif.summary.gps,
             "xmp_history": xmp.history,
             "icc": icc,
-            "thumbnail_compare": thumb.map(|t| json!({"main_aspect": t.main_aspect, "thumb_aspect": t.thumb_aspect, "diff": t.diff})),
+            "thumbnail_compare": thumb.map(|t| json!({"main_aspect": t.main_aspect, "thumb_aspect": t.thumb_aspect, "diff": t.diff, "local": t.local})),
         });
         Ok(ModuleResult { findings, visualizations, raw })
     }

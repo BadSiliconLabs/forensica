@@ -19,6 +19,8 @@ pub struct ThumbCompare {
     pub thumb_aspect: f32,
     /// Mean absolute difference (0..1) between both, at a common small size, on the overlapping region.
     pub diff: f32,
+    /// Fraction of 32×32 cells that differ strongly (localised edits).
+    pub local: f32,
 }
 
 /// Everything the rules look at.
@@ -385,13 +387,14 @@ fn thumbnail(b: &MetaBundle, out: &mut Vec<Finding>) {
                 .with("main_aspect", format!("{:.3}", t.main_aspect))
                 .with("thumbnail_aspect", format!("{:.3}", t.thumb_aspect)),
         );
-    } else if t.diff > 0.10 && !swapped {
-        let conf = (0.5 + t.diff).min(0.95);
+    } else if (t.diff > 0.10 || t.local >= 0.03) && !swapped {
+        let conf = (0.5 + t.diff + t.local).min(0.95);
         out.push(
             Finding::new(MODULE, "meta.thumbnail_mismatch", Severity::High, conf, "Embedded thumbnail differs from the image")
                 .explain("The EXIF thumbnail does not look like the main image. Editors that preserve EXIF without regenerating the thumbnail leave the *original* content visible in it.")
                 .limits("Benign causes: in-camera effects applied only to the main image, strong tone edits, or letterboxing. Compare both visually.")
-                .with("mean_abs_difference", format!("{:.3}", t.diff)),
+                .with("mean_abs_difference", format!("{:.3}", t.diff))
+                .with("differing_area", format!("{:.1}%", t.local * 100.0)),
         );
     }
 }
@@ -739,11 +742,11 @@ mod tests {
     #[test]
     fn thumbnail_rules() {
         let mut b = bundle(camera());
-        b.thumb = Some(ThumbCompare { main_aspect: 1.5, thumb_aspect: 1.5, diff: 0.3 });
+        b.thumb = Some(ThumbCompare { main_aspect: 1.5, thumb_aspect: 1.5, diff: 0.3, local: 0.2 });
         assert!(codes(&evaluate(&b)).contains(&"meta.thumbnail_mismatch"));
-        b.thumb = Some(ThumbCompare { main_aspect: 1.0, thumb_aspect: 1.5, diff: 0.0 });
+        b.thumb = Some(ThumbCompare { main_aspect: 1.0, thumb_aspect: 1.5, diff: 0.0, local: 0.0 });
         assert!(codes(&evaluate(&b)).contains(&"meta.thumbnail_aspect"));
-        b.thumb = Some(ThumbCompare { main_aspect: 1.5, thumb_aspect: 1.5, diff: 0.02 });
+        b.thumb = Some(ThumbCompare { main_aspect: 1.5, thumb_aspect: 1.5, diff: 0.02, local: 0.005 });
         let c = evaluate(&b);
         assert!(!codes(&c).iter().any(|c| c.starts_with("meta.thumbnail")));
     }

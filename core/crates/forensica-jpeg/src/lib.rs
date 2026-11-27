@@ -6,16 +6,20 @@ use std::sync::Arc;
 use forensica_core::AnalysisModule;
 
 pub mod dct;
+pub mod double;
+pub mod grid;
 pub mod quant;
 pub mod structure;
 
+mod double_module;
 mod structure_module;
 
+pub use double_module::DoubleCompressionModule;
 pub use structure_module::JpegStructureModule;
 
 /// All modules provided by this crate.
 pub fn modules() -> Vec<Arc<dyn AnalysisModule>> {
-    vec![Arc::new(JpegStructureModule)]
+    vec![Arc::new(JpegStructureModule), Arc::new(DoubleCompressionModule)]
 }
 
 #[cfg(test)]
