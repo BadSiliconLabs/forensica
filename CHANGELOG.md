@@ -4,6 +4,14 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-27
+### Added
+- Compare two versions of a picture (Tools → Compare with another version, `forensica-cli compare a b`): change map and which version is derived, works without metadata.
+- Simplified portrait mode / complete landscape mode.
+### Fixed
+- C2PA: the whole provenance chain is inspected; generative-AI steps in earlier manifests and declared SynthID watermarks are reported (previously AI edits looked like a plain re-save).
+- No longer flags EXIF Orientation 0 as impossible; thumbnail-shape mismatch lowered to low severity.
+
 ## [0.1.0] - 2026-11-27
 ### Added
 - **Engine:** plugin trait, parallel pipeline with progress streaming, cancellation, result cache (SHA-256 + module version + options), panic isolation; magic-byte sniffing; immutable inputs with SHA-256.

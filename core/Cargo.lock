@@ -1202,7 +1202,7 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 
 [[package]]
 name = "forensica-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "forensica-core",
  "forensica-engine",
@@ -1214,7 +1214,7 @@ dependencies = [
 
 [[package]]
 name = "forensica-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "image",
  "rayon",
@@ -1226,7 +1226,7 @@ dependencies = [
 
 [[package]]
 name = "forensica-engine"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "forensica-core",
  "forensica-jpeg",
@@ -1240,7 +1240,7 @@ dependencies = [
 
 [[package]]
 name = "forensica-jpeg"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "forensica-core",
  "image",
@@ -1251,7 +1251,7 @@ dependencies = [
 
 [[package]]
 name = "forensica-meta"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "c2pa",
  "flate2",
@@ -1265,7 +1265,7 @@ dependencies = [
 
 [[package]]
 name = "forensica-pixel"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "forensica-core",
  "image",
@@ -1277,7 +1277,7 @@ dependencies = [
 
 [[package]]
 name = "forensica_bridge"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "flutter_rust_bridge",
